@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <meta charset="utf-8">
+    <title>Web Table Unit Tests</title>
+
+    <link rel="shortcut icon" type="image/png" href="lib/jasmine-2.3.4/jasmine_favicon.png">
+    <link rel="stylesheet" href="lib/jasmine-2.3.4/jasmine.css">
+
+    <script src="lib/jasmine-2.3.4/jasmine.js"></script>
+    <script src="lib/jasmine-2.3.4/jasmine-html.js"></script>
+    <script src="lib/jasmine-2.3.4/boot.js"></script>
+    <script src="lib/Jasmine2.0TeamCityReporter/Jasmine2-teamcityreporter.js"></script>
+    <script src="lib/RequireJS/require.js"></script>
+    <script>
+        var TeamcityReporter = jasmineRequire.TeamcityReporter();
+        window.teamcityReporter = new TeamcityReporter();
+        jasmine.getEnv().addReporter(window.teamcityReporter);
+    </script>
+
+    <!-- include spec files here... -->
+    <script src="MapData/specs/mapdataspec.js"></script>
+    <script src="MapData/specs/mapsettingsspec.js"></script>
+    <script src="MapData/specs/pointspec.js"></script>
+    <script src="MapData/specs/resourcespec.js"></script>
+
+</head>
+
+<body>
+</body>
+</html>
