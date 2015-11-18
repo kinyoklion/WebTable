@@ -1,8 +1,9 @@
 /**
  * Created by Ryan Lamb on 11/14/15.
  */
- 
- /*global expect*/
+
+/* The following comment informs JSLint about the expect method of Jasmine. */ 
+/*global expect*/
 
 describe("Layer", function() {
 

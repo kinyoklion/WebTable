@@ -10,12 +10,14 @@ describe("Resources", function() {
     var Resources;
     var fromJSON;
     var testResources;
+    var ChangeType;
 
     beforeEach(function(done) {
-        require(['MapData/resources'], function(resources) {
+        require(['MapData/resources', "MapData/observable"], function(resources, observable) {
             Resources = resources.Resources;
             fromJSON = resources.fromJSON;
             testResources = new Resources();
+            ChangeType = observable.ChangeType;
             done();
         });
     });
@@ -57,6 +59,40 @@ describe("Resources", function() {
         var resource2 = testResources.getResource(resourceId2);
         expect(resource2).toBe(undefined);
     });
+    
+    it("should notify when resources are added", function() {
+        var observerCalled = false;
+        
+        testResources.observe(function(sender, path, value, change) {
+           observerCalled = true; 
+           expect(path).toBe("resourceList");
+           expect(value.value).toBe("test");
+           expect(value.isReference).toBe(true);
+           expect(change).toBe(ChangeType.ADDED);
+        });
+        
+        testResources.addResource("test", true);
+        
+        expect(observerCalled).toBe(true);
+    });
+    
+    it("should notify when resources are removed", function() {
+        var observerCalled = false;
+        
+        var resourceId = testResources.addResource("test", true);
+        
+        testResources.observe(function(sender, path, value, change) {
+           observerCalled = true; 
+           expect(path).toBe("resourceList");
+           expect(value).toBe(resourceId);
+           expect(change).toBe(ChangeType.REMOVED);
+        });
+        
+        testResources.removeUnusedResources();
+        
+        expect(observerCalled).toBe(true);
+    });
+
 
     it("should stringify", function() {
         var resourceId1 = testResources.addResource("test1", false);

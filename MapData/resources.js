@@ -54,6 +54,7 @@ define(["MapData/resource", "MapData/observable"], function(resource, observable
                 valueId = getResourceId();
                 var newResource = new resource.Resource(valueId, value, isReference);
                 resourceList[valueId] = newResource;
+                this.notify("resourceList", newResource, observable.ChangeType.ADDED);
             }
 
             //Make sure the key is always a string.
@@ -84,8 +85,11 @@ define(["MapData/resource", "MapData/observable"], function(resource, observable
                 }
             });
 
+            var notify = this.notify;
+            
             Object.keys(idsToRemove).forEach(function(key) {
-               delete resourceList[idsToRemove[key]];
+                notify("resourceList", key, observable.ChangeType.REMOVED);
+                delete resourceList[idsToRemove[key]];
             });
         };
 
