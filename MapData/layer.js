@@ -85,7 +85,8 @@
     }
     
     return {
-        Layer: Layer
+        Layer: Layer,
+        fromJSON: fromJSON
     }
      
  });
