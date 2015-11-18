@@ -27,7 +27,9 @@
          */
         this.addLayer = function(newLayer) {
            layers.push(newLayer);
-           this.addChildObservable("layers", newLayer);
+           //TODO: RRL: Need a generic way to do this. This is not a good
+           //approach for indexes.
+           this.addChildObservable("layers["+ String(layers.length - 1) +"]", newLayer);
            this.notify("layers", newLayer, observable.ChangeType.ADDED);
         };
         
@@ -35,7 +37,7 @@
          * Remove the layer with the specified name.
          * @param {string} layerName The name of the layer to remove.
          */
-        this.removeLayer = function(layerName) {
+        this.removeLayerByName = function(layerName) {
             for(var layerIndex = 0; layerIndex < layers.length; layerIndex++) {
                 if(layers[layerIndex].name == layerName) {
                     var layer = layers[layerIndex];
@@ -76,6 +78,22 @@
         this.getLayerByIndex = function(layerIndex) {
             return layers[layerIndex];
         };
+        
+        /**
+         * Create a simplified version of this object suitable for JSON
+         * serialization.
+         * @returns {object} Object suitable for serialization.
+         */
+        this.toJSON = function() {
+            var layerList = [];
+            for(var layerIndex = 0; layerIndex < layers.length; layerIndex++) {
+                layerList.push(layers[layerIndex].toJSON());
+            }
+            
+            return {
+                layers: layers
+            };
+        };
     } 
     
     /**
@@ -88,6 +106,6 @@
     
     return {
         Layers: Layers,
-        fromJSON: fromJSON()
+        fromJSON: fromJSON
     };
  });
