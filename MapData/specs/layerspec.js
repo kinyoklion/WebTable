@@ -22,6 +22,7 @@ describe("Layer", function() {
         expect(layer.visible).toBe(true);
         expect(layer.editorVisible).toBe(true);
         expect(layer.viewerVisible).toBe(true);
+        expect(layer.opacity).toBe(1);
     });
 
     it("should allow modification of the values", function() {
@@ -29,13 +30,16 @@ describe("Layer", function() {
         layer.visible = false;
         layer.editorVisible = false;
         layer.viewerVisible = false;
+        layer.opacity = 0.5;
 
         expect(layer.visible).toBe(false);
         expect(layer.editorVisible).toBe(false);
         expect(layer.viewerVisible).toBe(false);
+        expect(layer.opacity).toBe(0.5);
+
     });
 
-    it("should provide notification of the visible value changes", function() {
+    it("should provide notification of visible value changes", function() {
         var layer = new Layer();
         var observeCalled = false;
 
@@ -51,7 +55,7 @@ describe("Layer", function() {
         expect(observeCalled).toBe(true);
     });
 
-    it("should provide notification of the editorVisible value changes", function() {
+    it("should provide notification of editorVisible value changes", function() {
         var layer = new Layer();
         var observeCalled = false;
 
@@ -67,7 +71,7 @@ describe("Layer", function() {
         expect(observeCalled).toBe(true);
     });
     
-    it("should provide notification of the editorVisible value changes", function() {
+    it("should provide notification of editorVisible value changes", function() {
         var layer = new Layer();
         var observeCalled = false;
 
@@ -83,17 +87,35 @@ describe("Layer", function() {
         expect(observeCalled).toBe(true);
     });
 
+    it("should provide notification of opacity value changes", function() {
+        var layer = new Layer();
+        var observeCalled = false;
+
+        layer.observe(function(sender, path, value, change) {
+            observeCalled = true;
+            expect(path).toBe("opacity");
+            expect(value).toBe(0.5);
+            expect(change).toBe(ChangeType.UPDATED);
+        });
+
+        layer.opacity = 0.5;
+
+        expect(observeCalled).toBe(true);
+    });
+
     it("should stringify", function() {
         var layer = new Layer();
         layer.visible = false;
         layer.editorVisible = true;
         layer.viewerVisible = false;
+        layer.opacity = 0.25;
 
         var jsonLayer = JSON.stringify(layer);
         var parsed = JSON.parse(jsonLayer);
         expect(parsed.visible).toBe(false);
         expect(parsed.editorVisible).toBe(true);
         expect(parsed.viewerVisible).toBe(false);
+        expect(parsed.opacity).toBe(0.25);
     });
 
     it("should be parsed from JSON", function() {
@@ -101,6 +123,7 @@ describe("Layer", function() {
         layer.visible = false;
         layer.editorVisible = true;
         layer.viewerVisible = false;
+        layer.opacity = 0.25;
 
         var jsonLayer = JSON.stringify(layer);
         var parsed = JSON.parse(jsonLayer);
@@ -109,5 +132,6 @@ describe("Layer", function() {
         expect(newLayer.visible).toBe(false);
         expect(newLayer.editorVisible).toBe(true);
         expect(newLayer.viewerVisible).toBe(false);
+        expect(parsed.opacity).toBe(0.25);
     });
 });
