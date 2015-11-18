@@ -17,6 +17,7 @@
          var editorVisible = (opt_json === undefined) ? true : opt_json.editorVisible;
          var viewerVisible = (opt_json === undefined) ? true : opt_json.viewerVisible;
          var opacity = (opt_json === undefined) ? 1 : opt_json.opacity;
+         var name = (opt_json == undefined) ? 1 : opt_json.name;
          
          //TODO: RRL: Add object list.
          
@@ -78,6 +79,19 @@
                  this.notify("opacity", opacity);
              }
          });
+         
+          /**
+          * The name of the layer.
+          */
+         Object.defineProperty(this, "name", {
+             get: function () {
+                 return name;
+             },
+             set: function (v) {
+                 name = v;
+                 this.notify("name", name);
+             }
+         });
         
         /**
          * Create a version of this object suitable for JSON serialization.
@@ -87,7 +101,8 @@
                 visible: visible,
                 editorVisible: editorVisible,
                 viewerVisible: viewerVisible,
-                opacity: opacity
+                opacity: opacity,
+                name: name
             }
         };
     }

@@ -31,11 +31,13 @@ describe("Layer", function() {
         layer.editorVisible = false;
         layer.viewerVisible = false;
         layer.opacity = 0.5;
+        layer.name = "TestLayer";
 
         expect(layer.visible).toBe(false);
         expect(layer.editorVisible).toBe(false);
         expect(layer.viewerVisible).toBe(false);
         expect(layer.opacity).toBe(0.5);
+        expect(layer.name).toBe("TestLayer");
 
     });
 
@@ -99,6 +101,22 @@ describe("Layer", function() {
         });
 
         layer.opacity = 0.5;
+
+        expect(observeCalled).toBe(true);
+    });
+    
+    it("should provide notification of name value changes", function() {
+        var layer = new Layer();
+        var observeCalled = false;
+
+        layer.observe(function(sender, path, value, change) {
+            observeCalled = true;
+            expect(path).toBe("name");
+            expect(value).toBe("ChangedName");
+            expect(change).toBe(ChangeType.UPDATED);
+        });
+
+        layer.name  = "ChangedName";
 
         expect(observeCalled).toBe(true);
     });
