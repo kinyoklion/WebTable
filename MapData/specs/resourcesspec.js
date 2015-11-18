@@ -2,6 +2,9 @@
  * Created by Ryan Lamb on 11/15/15.
  */
 
+/* The following comment informs JSLint about the expect method of Jasmine. */ 
+/*global expect*/
+
 describe("Resources", function() {
 
     var Resources;

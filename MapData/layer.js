@@ -103,7 +103,7 @@
                 viewerVisible: viewerVisible,
                 opacity: opacity,
                 name: name
-            }
+            };
         };
     }
     
@@ -111,12 +111,12 @@
      * Create a layer object from a JSON object.
      */
     function fromJSON(jsonLayer) {
-        return new Layer(jsonLayer)
+        return new Layer(jsonLayer);
     }
     
     return {
         Layer: Layer,
         fromJSON: fromJSON
-    }
+    };
      
  });

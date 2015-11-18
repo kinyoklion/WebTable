@@ -1,6 +1,9 @@
 /**
  * Created by Ryan Lamb on 11/14/15.
  */
+ 
+/* The following comment informs JSLint about the expect method of Jasmine. */ 
+/*global expect*/
 
 describe("MapData", function() {
 

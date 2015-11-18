@@ -1,6 +1,8 @@
 /**
  * Created by Ryan Lamb on 11/14/15.
  */
+ 
+ /*global expect*/
 
 describe("Layer", function() {
 
