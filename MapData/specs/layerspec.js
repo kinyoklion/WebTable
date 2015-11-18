@@ -29,6 +29,10 @@ describe("Layer", function() {
         layer.visible = false;
         layer.editorVisible = false;
         layer.viewerVisible = false;
+
+        expect(layer.visible).toBe(false);
+        expect(layer.editorVisible).toBe(false);
+        expect(layer.viewerVisible).toBe(false);
     });
 
     it("should provide notification of the visible value changes", function() {
