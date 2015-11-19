@@ -94,6 +94,24 @@ define(function () {
         var childObserverCallback = function (sender, path, value, opt_change) {
             object.notify(sender.rootName + "." + path, value, opt_change);
         };
+        
+        /**
+         * Create an observable property on the observable object.
+         * {string} propertyName The name of the property to create.
+         * {object} initialValue The initial value for the property.
+         */
+        object.createObservedProperty = function(propertyName, initialValue) {
+            var value = initialValue;
+            Object.defineProperty(object, propertyName, {
+               get : function() {
+                   return value;
+               },
+               set : function(v) {
+                   value = v;
+                   object.notify(propertyName, value, ChangeType.UPDATED);
+               }
+            }); 
+        };
     }
 
     return {

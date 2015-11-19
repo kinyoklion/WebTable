@@ -23,86 +23,22 @@
          
          observable.MakeObservable(this);
          
-         /**
-          * Flag indicating if this layer is visible. This is the global
-          * visibility. Setting it to false means it will not be viewable by
-          * editors or viewers. If it is true, then the more specific visibility
-          * of the object may be toggled.
-          */
-         Object.defineProperty(this, "visible", {
-            get: function () {
-                return visible;
-            },
-            set: function (v) {
-                visible = v;
-                this.notify("visible", visible);
-            }
-        });
-        
-        /**
-         * Flag that indicates if this layer should be visible in the editor.
-         * If a layer is not "visible" then this setting will be ignored.
-         */
-         Object.defineProperty(this, "editorVisible", {
-            get: function () {
-                return editorVisible;
-            },
-            set: function (v) {
-                editorVisible = v;
-                this.notify("editorVisible", editorVisible);
-            }
-        });
-        
-        /**
-         * Flag indicating if this layer should be viewable by a viewing client.
-         * If a layer is not "visible" then this setting will be ignored.
-         */
-         Object.defineProperty(this, "viewerVisible", {
-            get: function () {
-                return viewerVisible;
-            },
-            set: function (v) {
-                viewerVisible = v;
-                this.notify("viewerVisible", viewerVisible);
-            }
-        });
-
-         /**
-          * A float from 0 to 1 indicating the opacity of the layer.
-          */
-         Object.defineProperty(this, "opacity", {
-             get: function () {
-                 return opacity;
-             },
-             set: function (v) {
-                 opacity = v;
-                 this.notify("opacity", opacity);
-             }
-         });
-         
-          /**
-          * The name of the layer.
-          */
-         Object.defineProperty(this, "name", {
-             get: function () {
-                 return name;
-             },
-             set: function (v) {
-                 name = v;
-                 this.notify("name", name);
-             }
-         });
+         this.createObservedProperty("visible", visible);
+         this.createObservedProperty("editorVisible", editorVisible);
+         this.createObservedProperty("viewerVisible", viewerVisible);
+         this.createObservedProperty("opacity", opacity);
+         this.createObservedProperty("name", name);
         
         /**
          * Create a version of this object suitable for JSON serialization.
          */
         this.toJSON = function () {
             return {
-                visible: visible,
-                editorVisible: editorVisible,
-                viewerVisible: viewerVisible,
-                opacity: opacity,
-                name: name
+                visible: this.visible,
+                editorVisible: this.editorVisible,
+                viewerVisible: this.viewerVisible,
+                opacity: this.opacity,
+                name: this.name
             };
         };
     }

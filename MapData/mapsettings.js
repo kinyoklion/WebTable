@@ -30,17 +30,8 @@ define(["./observable.js", "./point.js"], function (observable, point) {
         observable.MakeObservable(this);
         this.addChildObservable("gridOffset", gridOffset);
 
-        /**
-         * The grid size property.
-         */
-        Object.defineProperty(this, "gridSize", {
-            get: function () {
-                return setting.getGridSize()
-            },
-            set: function (y) {
-                setting.setGridSize(y)
-            }
-        });
+        this.createObservedProperty("gridSize", gridSize);
+        this.createObservedProperty("gridType", gridType);
 
         /**
          * The grid offset property. This will adjust the location of the grid relative to the map content.
@@ -53,52 +44,6 @@ define(["./observable.js", "./point.js"], function (observable, point) {
                 setting.setGridOffset(y)
             }
         });
-
-        /**
-         * The grid type property.
-         */
-        Object.defineProperty(this, "gridType", {
-            get: function () {
-                return setting.getGridType()
-            },
-            set: function (y) {
-                setting.setGridType(y)
-            }
-        });
-
-        /**
-         * Set the grid size.
-         * @param {number} value The new grid size.
-         */
-        this.setGridSize = function (value) {
-            gridSize = value;
-            this.notify("gridSize", value);
-        };
-
-        /**
-         * Get the current grid size.
-         * @returns {number} The current grid size.
-         */
-        this.getGridSize = function () {
-            return gridSize;
-        };
-
-        /**
-         * Set the grid type.
-         * @param {number} value Set the grid type. Should use a constant as defined in GridType.
-         */
-        this.setGridType = function (value) {
-            gridType = value;
-            this.notify("gridType", value);
-        };
-
-        /**
-         * Get the current grid type.
-         * @returns {number} The current grid type.
-         */
-        this.getGridType = function () {
-            return gridType;
-        };
 
         /**
          * Set the grid offset.
@@ -124,7 +69,7 @@ define(["./observable.js", "./point.js"], function (observable, point) {
          * @returns {{gridSize: number, gridType: number, gridOffset: {x, y}}}
          */
         this.toJSON = function () {
-            return {gridSize: gridSize, gridType: gridType, gridOffset: gridOffset.toJSON()};
+            return {gridSize: this.gridSize, gridType: this.gridType, gridOffset: this.gridOffset.toJSON()};
         };
     }
 
