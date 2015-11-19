@@ -14,6 +14,8 @@ define(["./observable.js"], function (observable) {
     function Point(opt_x, opt_y) {
         var x = (opt_x === undefined) ? 0 : opt_x;
         var y = (opt_y === undefined) ? 0 : opt_y;
+        
+        this.ispoint = true;
 
         var setting = this;
 

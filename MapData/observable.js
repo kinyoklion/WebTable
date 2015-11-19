@@ -53,9 +53,8 @@ define(function () {
          */
         object.notify = function (path, value, opt_change) {
             opt_change = (opt_change === undefined) ? ChangeType.UPDATED : opt_change;
-
             observers.forEach(function (callback) {
-                callback(this, path, value, opt_change);
+                callback(object, path, value, opt_change);
             });
         };
 
@@ -82,7 +81,7 @@ define(function () {
          * @param {string} value The root name for this object.
          */
         object.setRootName = function (value) {
-            rootName = value;
+            object.rootName = value;
         };
 
         /**
