@@ -1,5 +1,5 @@
 /**
- * Created by Ryan Lamb on 11/14/15.
+ * Created by Ryan Lamb on 11/19/15.
  */
 
 /* The following comment informs JSLint about the expect method of Jasmine. */ 
@@ -10,15 +10,19 @@ describe("Transform", function() {
     var Transform;
     var fromJSON;
     var ChangeType;
-    
+    var handlePropertyChangedTest;
+
     var testTransform;
 
     beforeEach(function(done) {
-        require(['MapData/transform', 'MapData/observable'], function(transform, observable) {
+        require(['MapData/transform', 'MapData/observable',
+        'MapData/specs/observabletesthelper'],
+        function(transform, observable, observableHelper) {
             Transform = transform.Transform;
             fromJSON = transform.fromJSON;
             ChangeType = observable.ChangeType;
             testTransform = new transform.Transform();
+            handlePropertyChangedTest = observableHelper.handlePropertyChangedTest;
             done();
         });
     });
@@ -56,20 +60,6 @@ describe("Transform", function() {
         expect(testTransform.yScale).toBe(8);
         expect(testTransform.zScale).toBe(9);
     });
-    
-    function handlePropertyChangedTest(object, property, testValue, changeType) {
-        var observedCalled = false;
-        
-        object.observe(function(sender, path, value, change) {
-            expect(value).toBe(testValue);
-            expect(change).toBe(changeType);
-            expect(path).toBe(property);
-            observedCalled = true;
-        });
-        
-        object[property] = testValue;
-        expect(observedCalled).toBe(true);
-    }
     
     it("should notify of x value changes", function() {
         handlePropertyChangedTest(testTransform, "x", 10, ChangeType.UPDATED);
