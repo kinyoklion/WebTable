@@ -12,7 +12,7 @@
      */
     function MapObject(opt_json) {
         var objectTransform = (opt_json === undefined) ? new transform.Transform() :
-            transform.fromJSON(opt_json);
+            transform.fromJSON(opt_json.transform);
         
         observable.MakeObservable(this);
 
@@ -34,7 +34,7 @@
     }
     
     return {
-        MapObject: MapObject(),
+        MapObject: MapObject,
         fromJSON: fromJSON
     };
  });

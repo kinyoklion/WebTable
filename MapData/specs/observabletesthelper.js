@@ -5,13 +5,20 @@
 /*global expect*/
 
 define(function() {
-    function handlePropertyChangedTest(object, property, testValue, changeType) {
+    function handlePropertyChangedTest(object, property, testValue, changeType, parent, rootName) {
         var observedCalled = false;
         
-        object.observe(function(sender, path, value, change) {
+        var objectToObserve = (parent === undefined) ? object : parent;
+        
+        objectToObserve.observe(function(sender, path, value, change) {
             expect(value).toBe(testValue);
             expect(change).toBe(changeType);
-            expect(path).toBe(property);
+            if(rootName !== undefined) {
+                expect(path).toBe(rootName + "." + property);
+            } else {
+                expect(path).toBe(property);
+            }
+            
             observedCalled = true;
         });
         
