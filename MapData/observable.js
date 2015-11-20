@@ -112,6 +112,46 @@ define(function () {
                }
             }); 
         };
+        
+        /**
+         * Create an observable property of an observable type on the observable 
+         * object.
+         * {string} propertyName The name of the property to create.
+         * {object} initialValue The initial value for the property.
+         * {string} rootName The root name to use for the observable child.
+         * {boolean} [allowSet] Optional flag indicating if setting of the
+         * property should be allowed. If it is false an error will be thrown
+         * when an attempt to set the property is made.
+         */
+        object.createObservableChildProperty = function(propertyName, initialValue, rootName, allowSet) {
+            var value = initialValue;
+
+            Object.defineProperty(object, propertyName, {
+                get: function () {
+                    return value;
+                },
+                set: function (v) {
+                    if(allowSet !== false) {
+                        object.removeChildObservable(value);
+                        value = v;
+                        object.addChildObservable(rootName, value);
+                        object.notify(propertyName, value);
+                    }
+                    else {
+                        throw new Error("Cannot set: " + propertyName);
+                    }
+                }
+        });
+
+        /**
+         * Set the grid offset.
+         * @param {Point} value The new grid offset value.
+         */
+        this.setGridOffset = function (value) {
+
+        };
+            this.addChildObservable(rootName, value);
+        };
     }
 
     return {

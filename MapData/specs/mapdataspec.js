@@ -32,7 +32,7 @@ describe("MapData", function() {
 
     it("should not allow the settings to be replaced", function() {
         var data = new MapData();
-        expect(function() { data.settings = "test"}).toThrow(new Error("Cannot replace settings."));
+        expect(function() { data.settings = "test"}).toThrow(new Error("Cannot set: settings"));
     });
 
     it("should stringify", function() {

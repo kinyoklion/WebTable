@@ -28,41 +28,10 @@ define(["./observable.js", "./point.js"], function (observable, point) {
 
         var setting = this;
         observable.MakeObservable(this);
-        this.addChildObservable("gridOffset", gridOffset);
 
         this.createObservedProperty("gridSize", gridSize);
         this.createObservedProperty("gridType", gridType);
-
-        /**
-         * The grid offset property. This will adjust the location of the grid relative to the map content.
-         */
-        Object.defineProperty(this, "gridOffset", {
-            get: function () {
-                return setting.getGridOffset()
-            },
-            set: function (y) {
-                setting.setGridOffset(y)
-            }
-        });
-
-        /**
-         * Set the grid offset.
-         * @param {Point} value The new grid offset value.
-         */
-        this.setGridOffset = function (value) {
-            this.removeChildObservable(gridOffset);
-            gridOffset = value;
-            this.addChildObservable("gridOffset", gridOffset);
-            this.notify("gridOffset", value);
-        };
-
-        /**
-         * Get the current grid offset.
-         * @returns {Point} The current grid offset.
-         */
-        this.getGridOffset = function () {
-            return gridOffset;
-        };
+        this.createObservableChildProperty("gridOffset", gridOffset, "gridOffset");
 
         /**
          * Create a simplified form for JSON serialization.

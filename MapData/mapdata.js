@@ -14,28 +14,7 @@ define(["./mapsettings", "./observable"], function (mapsettings, observable) {
         var settings = (opt_json === undefined) ? new mapsettings.MapSettings() : mapsettings.fromJSON(opt_json.settings);
 
         observable.MakeObservable(this);
-        this.addChildObservable("settings", settings);
-        var data = this;
-
-        /**
-         * Settings for the map. These settings affect the entire map.
-         */
-        Object.defineProperty(this, "settings", {
-            get: function () {
-                return data.getSettings()
-            },
-            set: function () {
-                throw new Error("Cannot replace settings.");
-            }
-        });
-
-        /**
-         * Get the current map settings.
-         * @returns {MapSettings}
-         */
-        this.getSettings = function () {
-            return settings;
-        };
+        this.createObservableChildProperty("settings", settings, "settings", false);
 
         /**
          * Create a simplified form of this object for JSON serialization.
