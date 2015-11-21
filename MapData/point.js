@@ -3,7 +3,7 @@
  * Defines an object that represents a point.
  */
 
-define(["./observable.js"], function (observable) {
+define(['MapData/observable'], function (observable) {
 
     /**
      * Object which represents an X, Y coordinate pair.

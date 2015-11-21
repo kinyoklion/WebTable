@@ -3,7 +3,7 @@
  * This object is responsible for storing and managing top level map settings.
  */
 
-define(["./observable.js", "./point.js"], function (observable, point) {
+define(["MapData/observable", "MapData/point"], function (observable, point) {
 
     /**
      * Enumeration for the different grid types.

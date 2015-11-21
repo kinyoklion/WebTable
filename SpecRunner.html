@@ -12,6 +12,11 @@
     <script src="lib/Jasmine2.0TeamCityReporter/Jasmine2-teamcityreporter.js"></script>
     <script src="lib/RequireJS/require.js"></script>
     <script>
+      require.config({
+        baseUrl: "./",
+      });
+    </script>
+    <script>
         var TeamcityReporter = jasmineRequire.TeamcityReporter();
         window.teamcityReporter = new TeamcityReporter();
         jasmine.getEnv().addReporter(window.teamcityReporter);

@@ -3,7 +3,7 @@
  * The purpose of this object is to store and manage map data.
  */
 
-define(['./mapsettings', './observable', './layers', './resources'], function (mapsettings, observable, layersModule, resourcesModule) {
+define(['MapData/mapsettings', 'MapData/observable', 'MapData/layers', 'MapData/resources'], function (mapsettings, observable, layersModule, resourcesModule) {
 
     /**
      * Object which contains all data for a map.
