@@ -12,15 +12,29 @@ requirejs.config({
 
 requirejs(['MapData/mapdata'],
     function   (mapdata) {
-        var mapInstance = new mapdata.MapData();
-        console.log(mapInstance);
-        
-        var MongoClient = require('mongodb').MongoClient;
-        var assert = require('assert');
-        var url = 'mongodb://localhost:27017/test';
-        MongoClient.connect(url, function(err, db) {
-            assert.equal(null, err);
-            console.log("Connected correctly to server.");
-            db.close();
+        var mapdatabase = require("./mapdatabase.js");
+        var database = new mapdatabase('mongodb://localhost:27017/test');
+        database.connect(function () {
+            database.getMap("TestMap", function(found, map) {
+                if(found === true) {
+                    if(map !== undefined) {
+                        console.log("Found the map!");
+                        console.dir(map);
+                        console.log("Deserializing the map.");
+                        var loadedMap = mapdata.fromJSON(map);
+                        console.log("Deserialized the map.");
+                        console.dir(loadedMap)
+                        database.disconnect();
+                    }
+                } else {
+                    console.log("Creating new map entry.");
+                    map = new mapdata.MapData();
+                    map.name = "TestMap";
+                    database.insertMap(map, function () {
+                        console.log("Inserted new map.");
+                        database.disconnect(); 
+                    });
+                }
+            });
         });
     });

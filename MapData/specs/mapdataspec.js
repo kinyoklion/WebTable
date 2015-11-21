@@ -44,6 +44,7 @@ describe("MapData", function() {
         expect(mapData.settings.gridOffset.y).toBe(0);
         
         expect(mapData.layers.getLayerCount()).toBe(0);
+        expect(mapData.name).toBe("Untitled");
     });
 
     it("should not allow the settings to be replaced", function() {
@@ -72,6 +73,11 @@ describe("MapData", function() {
         mapData.resources.addResource("value", false);
         
         expect(observerCalled).toBe(true);
+    });
+    
+    it("should notify name value changes", function() {
+       handlePropertyChangedTest(mapData, "name", "NewName", 
+        ChangeType.UPDATED); 
     });
     
     it("should notify of layers value changes", function() {
