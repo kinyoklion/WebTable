@@ -5,7 +5,7 @@
 /*global expect*/
 
 define(function() {
-    function handlePropertyChangedTest(object, property, testValue, changeType, parent, rootName) {
+    function handlePropertyChangedTest(object, property, testValue, changeType, parent, rootName, modificationFunction) {
         var observedCalled = false;
         
         var objectToObserve = (parent === undefined) ? object : parent;
@@ -22,7 +22,11 @@ define(function() {
             observedCalled = true;
         });
         
-        object[property] = testValue;
+        if(modificationFunction === undefined) {
+            object[property] = testValue;
+        } else {
+            modificationFunction();
+        }
         expect(observedCalled).toBe(true);
     }
     

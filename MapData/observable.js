@@ -27,7 +27,8 @@ define(function () {
 
         /**
          * This method adds an observation callback.
-         * @param {function} callback Callback which accepts a sender, path, and value.
+         * @param {function} callback Callback which accepts a sender, path, value, and change type.
+         * ({object} sender, {string} path, {object} value, {ChangeType} change)
          */
         object.observe = function (callback) {
             observers.push(callback);
