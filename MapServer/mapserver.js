@@ -10,31 +10,25 @@ requirejs.config({
     baseUrl: '../',
 });
 
-requirejs(['MapData/mapdata'],
-    function   (mapdata) {
+requirejs(['MapData/mapdata', 'MapData/observable'],
+    function(mapdata, observable) {
         var mapdatabase = require("./mapdatabase.js");
         var database = new mapdatabase('mongodb://localhost:27017/test');
-        database.connect(function () {
-            database.getMap("TestMap", function(found, map) {
-                if(found === true) {
-                    if(map !== undefined) {
-                        console.log("Found the map!");
-                        console.dir(map);
-                        console.log("Deserializing the map.");
-                        var loadedMap = mapdata.fromJSON(map);
-                        console.log("Deserialized the map.");
-                        console.dir(loadedMap)
-                        database.disconnect();
-                    }
-                } else {
-                    console.log("Creating new map entry.");
-                    map = new mapdata.MapData();
-                    map.name = "TestMap";
-                    database.insertMap(map, function () {
-                        console.log("Inserted new map.");
-                        database.disconnect(); 
-                    });
+        var persistenceEngine = require("./persistenceengine.js");
+        var persistence = new persistenceEngine(database, mapdata, observable);
+
+        persistence.loadMap("Name0", function(found, map) {
+            if (found === true && map !== undefined) {
+                console.log("Map Name: " + map.name);
+                if (map.name === "Name1") {
+                    map.name = "Name0";
                 }
-            });
+                else {
+                    map.name = "Name1";
+                }
+            }
+            else if (found === false) {
+                console.log("Map Not Found");
+            }
         });
     });

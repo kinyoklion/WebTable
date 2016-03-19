@@ -2,7 +2,7 @@
  * Created by Ryan Lamb on 11/14/15.
  * Contains a helper that can make a class observable.
  */
-define(function () {
+define(function() {
 
     /**
      * Enumeration that indicates the kind of change that has happened.
@@ -13,7 +13,19 @@ define(function () {
     var ChangeType = {
         UPDATED: 0,
         ADDED: 1,
-        REMOVED: 2
+        REMOVED: 2,
+
+        properties: {
+            0: {
+                name: "updated",
+            },
+            1: {
+                name: "added",
+            },
+            2: {
+                name: "removed",
+            }
+        }
     };
 
     /**
@@ -30,7 +42,7 @@ define(function () {
          * @param {function} callback Callback which accepts a sender, path, value, and change type.
          * ({object} sender, {string} path, {object} value, {ChangeType} change)
          */
-        object.observe = function (callback) {
+        object.observe = function(callback) {
             observers.push(callback);
         };
 
@@ -38,7 +50,7 @@ define(function () {
          * Remove an observation callback.
          * @param {function} callback Callback function to be removed.
          */
-        object.unObserve = function (callback) {
+        object.unObserve = function(callback) {
             var index = observers.indexOf(callback);
 
             if (index !== -1) {
@@ -52,9 +64,9 @@ define(function () {
          * @param {object} value The new value.
          * @param {number} [opt_change] The type of change made.
          */
-        object.notify = function (path, value, opt_change) {
+        object.notify = function(path, value, opt_change) {
             opt_change = (opt_change === undefined) ? ChangeType.UPDATED : opt_change;
-            observers.forEach(function (callback) {
+            observers.forEach(function(callback) {
                 callback(object, path, value, opt_change);
             });
         };
@@ -64,7 +76,7 @@ define(function () {
          * @param {string} rootName The root name to use for this child.
          * @param {object} child The child object to propagate status for.
          */
-        object.addChildObservable = function (rootName, child) {
+        object.addChildObservable = function(rootName, child) {
             child.observe(childObserverCallback);
             child.setRootName(rootName);
         };
@@ -73,7 +85,7 @@ define(function () {
          * Stop observing changes to a child.
          * @param child The child to stop observing.
          */
-        object.removeChildObservable = function (child) {
+        object.removeChildObservable = function(child) {
             child.unObserve(childObserverCallback);
         };
 
@@ -81,7 +93,7 @@ define(function () {
          * Set the root name for this observable object.
          * @param {string} value The root name for this object.
          */
-        object.setRootName = function (value) {
+        object.setRootName = function(value) {
             object.rootName = value;
         };
 
@@ -92,10 +104,10 @@ define(function () {
          * @param {object} value The new value of the object.
          * @param {number} [opt_change] The type of change made.
          */
-        var childObserverCallback = function (sender, path, value, opt_change) {
+        var childObserverCallback = function(sender, path, value, opt_change) {
             object.notify(sender.rootName + "." + path, value, opt_change);
         };
-        
+
         /**
          * Create an observable property on the observable object.
          * {string} propertyName The name of the property to create.
@@ -104,16 +116,16 @@ define(function () {
         object.createObservedProperty = function(propertyName, initialValue) {
             var value = initialValue;
             Object.defineProperty(object, propertyName, {
-               get : function() {
-                   return value;
-               },
-               set : function(v) {
-                   value = v;
-                   object.notify(propertyName, value, ChangeType.UPDATED);
-               }
-            }); 
+                get: function() {
+                    return value;
+                },
+                set: function(v) {
+                    value = v;
+                    object.notify(propertyName, value, ChangeType.UPDATED);
+                }
+            });
         };
-        
+
         /**
          * Create an observable property of an observable type on the observable 
          * object.
@@ -128,11 +140,11 @@ define(function () {
             var value = initialValue;
 
             Object.defineProperty(object, propertyName, {
-                get: function () {
+                get: function() {
                     return value;
                 },
-                set: function (v) {
-                    if(allowSet !== false) {
+                set: function(v) {
+                    if (allowSet !== false) {
                         object.removeChildObservable(value);
                         value = v;
                         object.addChildObservable(rootName, value);
@@ -142,15 +154,15 @@ define(function () {
                         throw new Error("Cannot set: " + propertyName);
                     }
                 }
-        });
+            });
 
-        /**
-         * Set the grid offset.
-         * @param {Point} value The new grid offset value.
-         */
-        this.setGridOffset = function (value) {
+            /**
+             * Set the grid offset.
+             * @param {Point} value The new grid offset value.
+             */
+            this.setGridOffset = function(value) {
 
-        };
+            };
             this.addChildObservable(rootName, value);
         };
     }

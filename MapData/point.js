@@ -40,5 +40,5 @@ define(['MapData/observable'], function (observable) {
     return {
         Point: Point,
         fromJSON: fromJSON
-    }
+    };
 });
