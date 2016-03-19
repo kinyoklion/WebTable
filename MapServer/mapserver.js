@@ -17,7 +17,7 @@ requirejs(['MapData/mapdata', 'MapData/observable'],
         var persistenceEngine = require("./persistenceengine.js");
         var persistence = new persistenceEngine(database, mapdata, observable);
 
-        persistence.loadMap("Name0", function(found, map) {
+        persistence.loadMap("Name1", function(found, map) {
             if (found === true && map !== undefined) {
                 console.log("Map Name: " + map.name);
                 if (map.name === "Name1") {
@@ -29,6 +29,7 @@ requirejs(['MapData/mapdata', 'MapData/observable'],
             }
             else if (found === false) {
                 console.log("Map Not Found");
+                //persistence.createMap("Name0", function() {});
             }
         });
     });

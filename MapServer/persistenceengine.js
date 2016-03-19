@@ -17,7 +17,6 @@ function PersistenceEngine(database, mapdata, observable) {
 
     this.loadMap = function(mapName, callback) {
         database.connect(function() {
-            database.findMaps(function(){});
             database.getMap(mapName, function(mapFound, map) {
                 if (mapFound === true && map !== undefined) {
                     loadedMap = mapdata.fromJSON(map);
@@ -32,15 +31,22 @@ function PersistenceEngine(database, mapdata, observable) {
         });
     };
 
+    this.createMap = function(mapName, callback) {
+        database.connect(function() {
+            var map = new mapdata.MapData();
+            map.name = mapName;
+            database.insertMap(map, function(result) {
+                callback(result);
+            });
+        });
+    };
+
     var updateMap = function(sender, path, value, change) {
         database.updateMap(persistedName, path, value);
-        
+
         //Store the name of the most recent database. This is needed if it
         //changes and doesn't hurt if it doesn't change.
         persistedName = loadedMap.name;
-        
-        console.log("Map Changed, path: " + path + " value: " + value + 
-        " type: " + observable.ChangeType.properties[change].name);
     };
 }
 

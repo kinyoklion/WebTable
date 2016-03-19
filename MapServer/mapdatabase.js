@@ -12,6 +12,7 @@ function MapDatabase(url) {
     var MongoClient = require('mongodb').MongoClient;
     var assert = require('assert');
     var db;
+    var connected = false;
 
     /**
      * Insert a map in to the database.
@@ -52,7 +53,7 @@ function MapDatabase(url) {
     this.updateMap = function(mapName, path, value) {
         var update = {};
         update[path] = value;
-        
+
         db.collection('maps').update({
             "name": mapName
         }, {
@@ -76,16 +77,27 @@ function MapDatabase(url) {
     };
 
     this.connect = function(callback) {
-        MongoClient.connect(url, function(err, newDb) {
-            assert.equal(null, err);
-            db = newDb;
+        if (connected) {
             callback();
-        });
+        }
+        else {
+            MongoClient.connect(url, function(err, newDb) {
+                assert.equal(null, err);
+                db = newDb;
+                connected = true;
+                callback();
+            });
+        }
     };
 
     this.disconnect = function() {
+        connected = false;
         db.close();
     };
+
+    this._drop = function() {
+        db.dropDatabase();
+    }
 };
 
 module.exports = MapDatabase;
