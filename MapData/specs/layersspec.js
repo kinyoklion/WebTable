@@ -89,7 +89,7 @@ describe("Layers", function() {
         
         testLayers.observe(function(sender, path, value, change) {
             observerCalled = true;
-            expect(path).toBe("layers[0].name");
+            expect(path).toBe("layers.0.name");
             expect(value).toBe("NewName");
             expect(change).toBe(ChangeType.UPDATED);
         });
