@@ -45,8 +45,8 @@ function PersistenceEngine(database, mapdata, observable) {
     
     this.then = function(callback) {
         Promise.all(operations).then(function() {
-            callback();
             operations = [];
+            callback();
         });
     };
 
