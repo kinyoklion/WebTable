@@ -90,25 +90,21 @@ describe("PersistenceEngine", function() {
         });
     });
 
-    it("should persist addition of layers", function(done) {
+    function makeAndModifyMap(modify, test, done) {
         persistence.createMap("TestMap", function(result) {
             persistence.loadMap("TestMap", function(mapFound, map) {
                 if (mapFound === true && map != undefined) {
-                    var testLayer = new Layer();
-                    testLayer.name = "TestLayer";
 
-                    var testLayer2 = new Layer();
-                    testLayer2.name = "TestLayer2";
-
-                    map.layers.addLayer(testLayer);
-                    map.layers.addLayer(testLayer2);
+                    modify(map);
 
                     persistence.then(function() {
                         persistence.loadMap("TestMap", function(mapFound, map) {
                             if (mapFound === true && map != undefined) {
-                                expect(map.layers.getLayerCount()).toBe(2);
-                                expect(map.layers.getLayerByName("TestLayer").name).toBe("TestLayer");
-                                expect(map.layers.getLayerByName("TestLayer2").name).toBe("TestLayer2");
+                                test(map);
+                                done();
+                            }
+                            else if (mapFound !== true) {
+                                fail("Modified map could not be loaded.")
                                 done();
                             }
                         });
@@ -116,11 +112,28 @@ describe("PersistenceEngine", function() {
 
                 }
                 else if (mapFound !== true) {
-                    fail("Map could not be loaded.")
+                    fail("Created map could not be loaded.")
                     done();
                 }
             });
-
         });
+    }
+
+    it("should persist addition of layers", function(done) {
+        makeAndModifyMap(function(map) {
+            var testLayer = new Layer();
+            testLayer.name = "TestLayer";
+
+            var testLayer2 = new Layer();
+            testLayer2.name = "TestLayer2";
+
+            map.layers.addLayer(testLayer);
+            map.layers.addLayer(testLayer2);
+        }, function(map) {
+            expect(map.layers.getLayerCount()).toBe(2);
+            expect(map.layers.getLayerByName("TestLayer").name).toBe("TestLayer");
+            expect(map.layers.getLayerByName("TestLayer2").name).toBe("TestLayer2");
+
+        }, done);
     });
 });
