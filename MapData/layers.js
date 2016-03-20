@@ -29,7 +29,7 @@
            layers.push(newLayer);
            //TODO: RRL: Need a generic way to do this. This is not a good
            //approach for indexes.
-           this.addChildObservable("layers["+ String(layers.length - 1) +"]", newLayer);
+           this.addChildObservable("layers."+ String(layers.length - 1), newLayer);
            this.notify("layers", newLayer, observable.ChangeType.ADDED);
         };
         

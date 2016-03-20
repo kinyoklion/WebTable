@@ -53,13 +53,11 @@ function PersistenceEngine(database, mapdata, observable) {
     var updateMap = function(sender, path, value, change) {
         if (change === observable.ChangeType.UPDATED) {
             operations.push(database.updateField(persistedName, path, value));
-
         }
         else if (change === observable.ChangeType.REMOVED) {
             operations.push(database.removeItem(persistedName, path, value));
         }
         else if (change === observable.ChangeType.ADDED) {
-            console.log("Adding item to database! Path: " + path);
             operations.push(database.addItem(persistedName, path, value));
         }
 

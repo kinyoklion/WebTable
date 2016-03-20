@@ -136,4 +136,88 @@ describe("PersistenceEngine", function() {
 
         }, done);
     });
+
+    it("should persist layer name changes", function(done) {
+        makeAndModifyMap(function(map) {
+            var testLayer = new Layer();
+            testLayer.name = "TestLayer";
+
+            map.layers.addLayer(testLayer);
+            persistence.then(function() {
+                var layer = map.layers.getLayerByName("TestLayer");
+                layer.name = "RenamedLayer";
+            });
+        }, function(map) {
+            var layer = map.layers.getLayerByName("RenamedLayer");
+            expect(layer.name).toBe("RenamedLayer");
+        }, done);
+    });
+
+    it("should persist visible changes", function(done) {
+        makeAndModifyMap(function(map) {
+            var testLayer = new Layer();
+            testLayer.name = "TestLayer";
+            testLayer.visible = false;
+
+            map.layers.addLayer(testLayer);
+            persistence.then(function() {
+                var layer = map.layers.getLayerByName("TestLayer");
+                layer.visible = true;
+            });
+        }, function(map) {
+            var layer = map.layers.getLayerByName("TestLayer");
+            expect(layer.visible).toBe(true);
+        }, done);
+    });
+
+    it("should persist editor visible changes", function(done) {
+        makeAndModifyMap(function(map) {
+            var testLayer = new Layer();
+            testLayer.name = "TestLayer";
+            testLayer.editorVisible = false;
+
+            map.layers.addLayer(testLayer);
+            persistence.then(function() {
+                var layer = map.layers.getLayerByName("TestLayer");
+                layer.editorVisible = true;
+            });
+        }, function(map) {
+            var layer = map.layers.getLayerByName("TestLayer");
+            expect(layer.editorVisible).toBe(true);
+        }, done);
+    });
+
+    it("should persist player visible changes", function(done) {
+        makeAndModifyMap(function(map) {
+            var testLayer = new Layer();
+            testLayer.name = "TestLayer";
+            testLayer.viewerVisible = false;
+
+            map.layers.addLayer(testLayer);
+            persistence.then(function() {
+                var layer = map.layers.getLayerByName("TestLayer");
+                layer.viewerVisible = true;
+            });
+        }, function(map) {
+            var layer = map.layers.getLayerByName("TestLayer");
+            expect(layer.viewerVisible).toBe(true);
+        }, done);
+    });
+
+    it("should persist opacity visible", function(done) {
+        makeAndModifyMap(function(map) {
+            var testLayer = new Layer();
+            testLayer.name = "TestLayer";
+            testLayer.opacity = 1;
+
+            map.layers.addLayer(testLayer);
+            persistence.then(function() {
+                var layer = map.layers.getLayerByName("TestLayer");
+                testLayer.opacity = 0.5;
+            });
+        }, function(map) {
+            var layer = map.layers.getLayerByName("TestLayer");
+            expect(layer.opacity).toBe(0.5);
+        }, done);
+    });
 });
