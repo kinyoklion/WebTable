@@ -13,6 +13,13 @@ function MapDatabase(url) {
     var assert = require('assert');
     var db;
     var connected = false;
+    var writeOptions = {
+        writeConcern: {
+            w: 1,
+            j: true,
+            wtimeout: 5000
+        }
+    };
 
     /**
      * Insert a map in to the database.
@@ -50,17 +57,50 @@ function MapDatabase(url) {
         });
     };
 
-    this.updateMap = function(mapName, path, value) {
+    this.updateField = function(mapName, path, value) {
         var update = {};
+        if (value.toJSON !== undefined) {
+            value = value.toJSON();
+        }
         update[path] = value;
 
-        db.collection('maps').update({
+        return db.collection('maps').update({
             "name": mapName
         }, {
             $set: update
+        }, writeOptions);
+    };
+
+    this.removeItem = function(mapName, path, index) {
+        var unsetArgument = {};
+        unsetArgument[path + "." + index] = 1;
+        var removeArgument = {};
+        removeArgument[path] = null;
+        return db.collection('maps').update({
+            name: mapName
         }, {
-            upsert: false
+            $unset: unsetArgument
+        }).then(function() {
+            db.collection('maps').update({
+                name: mapName
+            }, {
+                $pull: removeArgument
+            }, writeOptions);
         });
+    };
+
+    this.addItem = function(mapName, path, value) {
+        var pushArgument = {};
+        if (value.toJSON !== undefined) {
+            value = value.toJSON();
+        }
+        pushArgument[path] = value;
+        console.log("Push path: " + path);
+        return db.collection('maps').update({
+            name: mapName
+        }, {
+            $push: pushArgument
+        }, writeOptions);
     };
 
     this.findMaps = function(callback) {
@@ -95,9 +135,9 @@ function MapDatabase(url) {
         db.close();
     };
 
-    this._drop = function() {
-        db.dropDatabase();
-    }
+    this._drop = function(callback) {
+        db.dropDatabase(callback);
+    };
 };
 
 module.exports = MapDatabase;

@@ -14,8 +14,10 @@ function PersistenceEngine(database, mapdata, observable) {
     //Need the name currently in the database if the name gets updated. If we
     //only have the new name, then we will not be able to find the record.
     var persistedName = null;
+    var operations = [];
 
     this.loadMap = function(mapName, callback) {
+        var persistence = this;
         database.connect(function() {
             database.getMap(mapName, function(mapFound, map) {
                 if (mapFound === true && map !== undefined) {
@@ -40,9 +42,26 @@ function PersistenceEngine(database, mapdata, observable) {
             });
         });
     };
+    
+    this.then = function(callback) {
+        Promise.all(operations).then(function() {
+            callback();
+            operations = [];
+        });
+    };
 
     var updateMap = function(sender, path, value, change) {
-        database.updateMap(persistedName, path, value);
+        if (change === observable.ChangeType.UPDATED) {
+            operations.push(database.updateField(persistedName, path, value));
+
+        }
+        else if (change === observable.ChangeType.REMOVED) {
+            operations.push(database.removeItem(persistedName, path, value));
+        }
+        else if (change === observable.ChangeType.ADDED) {
+            console.log("Adding item to database! Path: " + path);
+            operations.push(database.addItem(persistedName, path, value));
+        }
 
         //Store the name of the most recent database. This is needed if it
         //changes and doesn't hurt if it doesn't change.
