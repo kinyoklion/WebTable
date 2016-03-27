@@ -12,94 +12,97 @@ define(["MapData/resource", "MapData/observable"], function(resource, observable
      * @constructor
      */
     function Resources(opt_json) {
-        var nextId = (opt_json === undefined) ? 0 : opt_json.nextId;
-        var resourceList = {};
+        this._nextId = (opt_json === undefined) ? 0 : opt_json.nextId;
+        this._resourceList = {};
 
-        if(opt_json !== undefined) {
+        if (opt_json !== undefined) {
             Object.keys(opt_json.resourceList).forEach(function(key) {
-                resourceList[key] = resource.fromJSON(opt_json.resourceList[key])
+                this._resourceList[key] = resource.fromJSON(opt_json.resourceList[key])
             });
         }
 
         //There will be observations for addition and removal of resources.
         observable.MakeObservable(this);
+    }
 
-        /**
-         * Get a resource id to use for a new resource.
-         * @returns {string} The resource id to use for the new resource.
-         */
-        function getResourceId() {
-            var idToAssign = nextId;
-            nextId++;
-            return String(idToAssign);
+    /**
+     * Get a resource id to use for a new resource.
+     * @returns {string} The resource id to use for the new resource.
+     */
+    Resources.prototype._getResourceId = function() {
+        var idToAssign = this._nextId;
+        this._nextId++;
+        return String(idToAssign);
+    }
+
+    /**
+     * Add a resource for usage in the map. If the resource exists, then the id for the existing resource will be
+     * returned.
+     * @param {object} value The value of the resource.
+     * @param {boolean} isReference Flag indicating if the resource is a reference.
+     * @returns {string} The resource id for the added resource.
+     */
+    Resources.prototype.addResource = function(value, isReference) {
+        var valueId = undefined;
+
+        Object.keys(this._resourceList).forEach(function(key) {
+            if (this._resourceList[key].value === value && this._resourceList[key].isReference === isReference) {
+                valueId = key;
+            }
+        });
+
+        if (valueId === undefined) {
+            valueId = this._getResourceId();
+            var newResource = new resource.Resource(valueId, value, isReference);
+            this._resourceList[valueId] = newResource;
+            this.notify("resourceList", newResource, observable.ChangeType.ADDED);
         }
 
-        /**
-         * Add a resource for usage in the map. If the resource exists, then the id for the existing resource will be
-         * returned.
-         * @param {object} value The value of the resource.
-         * @param {boolean} isReference Flag indicating if the resource is a reference.
-         * @returns {string} The resource id for the added resource.
-         */
-        this.addResource = function(value, isReference) {
-            var valueId = undefined;
+        //Make sure the key is always a string.
+        return valueId;
+    };
 
-            Object.keys(resourceList).forEach(function(key) {
-                if(resourceList[key].value === value && resourceList[key].isReference === isReference) {
-                    valueId = key;
-                }
-            });
+    /**
+     * Get the resource for the specified id.
+     * @param {String} id The id of the resource to access.
+     * @returns {Resource} The resource associated with the specified id.
+     */
+    Resources.prototype.getResource = function(id) {
+        if (id in this._resourceList) {
+            return this._resourceList[id];
+        }
+        return undefined;
+    };
 
-            if(valueId === undefined) {
-                valueId = getResourceId();
-                var newResource = new resource.Resource(valueId, value, isReference);
-                resourceList[valueId] = newResource;
-                this.notify("resourceList", newResource, observable.ChangeType.ADDED);
+    /**
+     * Perform a sweep and remove resources that are no longer in use.
+     */
+    Resources.prototype.removeUnusedResources = function() {
+        var idsToRemove = [];
+
+        Object.keys(this._resourceList).forEach(function(key) {
+            if (!this._resourceList[key].hasReferences()) {
+                idsToRemove.push(key);
             }
+        });
 
-            //Make sure the key is always a string.
-            return valueId;
+        var notify = this.notify;
+
+        Object.keys(idsToRemove).forEach(function(key) {
+            notify("resourceList", key, observable.ChangeType.REMOVED);
+            delete this._resourceList[idsToRemove[key]];
+        });
+    };
+
+    /**
+     * Create a simplified JSON compatible version of this object.
+     */
+    Resources.prototype.toJSON = function() {
+        return {
+            nextId: this._nextId,
+            resourceList: this._resourceList
         };
-
-        /**
-         * Get the resource for the specified id.
-         * @param {String} id The id of the resource to access.
-         * @returns {Resource} The resource associated with the specified id.
-         */
-        this.getResource = function(id) {
-            if(id in resourceList) {
-                return resourceList[id];
-            }
-            return undefined;
-        };
-
-        /**
-         * Perform a sweep and remove resources that are no longer in use.
-         */
-        this.removeUnusedResources = function() {
-            var idsToRemove = [];
-
-            Object.keys(resourceList).forEach(function(key) {
-                if(!resourceList[key].hasReferences()) {
-                    idsToRemove.push(key);
-                }
-            });
-
-            var notify = this.notify;
-            
-            Object.keys(idsToRemove).forEach(function(key) {
-                notify("resourceList", key, observable.ChangeType.REMOVED);
-                delete resourceList[idsToRemove[key]];
-            });
-        };
-
-        /**
-         * Create a simplified JSON compatible version of this object.
-         */
-        this.toJSON = function() {
-            return {nextId: nextId, resourceList: resourceList};
-        };
-    }
+    };
 
     /**
      * Create Resources from a JSON object.

@@ -3,7 +3,7 @@
  * This object is responsible for storing and managing top level map settings.
  */
 
-define(["MapData/observable", "MapData/point"], function (observable, point) {
+define(["MapData/observable", "MapData/point"], function(observable, point) {
 
     /**
      * Enumeration for the different grid types.
@@ -22,25 +22,28 @@ define(["MapData/observable", "MapData/point"], function (observable, point) {
      */
     function MapSettings(opt_json) {
 
-        var gridSize = (opt_json === undefined) ? 10 : opt_json.gridSize;
-        var gridOffset = (opt_json === undefined) ? new point.Point() : point.fromJSON(opt_json.gridOffset);
-        var gridType = (opt_json === undefined) ? GridType.SQUARE : opt_json.gridType;
+        this._gridSize = (opt_json === undefined) ? 10 : opt_json.gridSize;
+        this._gridOffset = (opt_json === undefined) ? new point.Point() : point.fromJSON(opt_json.gridOffset);
+        this._gridType = (opt_json === undefined) ? GridType.SQUARE : opt_json.gridType;
 
-        var setting = this;
         observable.MakeObservable(this);
 
-        this.createObservedProperty("gridSize", gridSize);
-        this.createObservedProperty("gridType", gridType);
-        this.createObservableChildProperty("gridOffset", gridOffset, "gridOffset");
-
-        /**
-         * Create a simplified form for JSON serialization.
-         * @returns {{gridSize: number, gridType: number, gridOffset: {x, y}}}
-         */
-        this.toJSON = function () {
-            return {gridSize: this.gridSize, gridType: this.gridType, gridOffset: this.gridOffset.toJSON()};
-        };
+        this.createObservedProperty("gridSize", this._gridSize);
+        this.createObservedProperty("gridType", this._gridType);
+        this.createObservableChildProperty("gridOffset", this._gridOffset, "gridOffset");
     }
+
+    /**
+     * Create a simplified form for JSON serialization.
+     * @returns {{gridSize: number, gridType: number, gridOffset: {x, y}}}
+     */
+    MapSettings.prototype.toJSON = function() {
+        return {
+            gridSize: this.gridSize,
+            gridType: this.gridType,
+            gridOffset: this.gridOffset.toJSON()
+        };
+    };
 
     /**
      * Function which creates map settings from their serialized form.

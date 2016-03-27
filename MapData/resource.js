@@ -3,7 +3,7 @@
  * Resource represents a single unique resource.
  */
 
-define(function () {
+define(function() {
 
     /**
      * Construct a resource instance. Once constructed a resource cannot be modified.
@@ -15,16 +15,19 @@ define(function () {
      */
     function Resource(id, value, isReference) {
         //Note that the resource type does not need to be observable because it cannot change.
-        var referenceCount = 0;
+        this._referenceCount = 0;
+        this._id = id;
+        this._value = value;
+        this._isReference = isReference;
 
         /**
          * Read only property for the resource id.
          */
         Object.defineProperty(this, "id", {
-            get: function () {
-                return id;
+            get: function() {
+                return this._id;
             },
-            set: function () {
+            set: function() {
                 throw new Error("id cannot be changed");
             }
         });
@@ -33,8 +36,8 @@ define(function () {
          * Read only property for the resource value.
          */
         Object.defineProperty(this, "value", {
-            get: function () {
-                return value;
+            get: function() {
+                return this._value;
             },
             set: function() {
                 throw new Error("value cannot be changed")
@@ -45,47 +48,51 @@ define(function () {
          * Read only property which indicates if the value is a reference.
          */
         Object.defineProperty(this, "isReference", {
-            get: function () {
-               return isReference;
+            get: function() {
+                return this._isReference;
             },
-            set: function () {
-              throw new Error("isReference cannot be changed");
+            set: function() {
+                throw new Error("isReference cannot be changed");
             }
         });
-
-        /**
-         * Add a reference to this resource.
-         */
-        this.addReference = function() {
-            referenceCount++;
-        };
-
-        /**
-         * Remove a reference from this resource.
-         */
-        this.removeReference = function() {
-            if(referenceCount === 0) {
-                throw new Error("Reference count imbalance. Removing reference from object with no references.");
-            }
-            referenceCount--;
-        };
-
-        /**
-         * Check if this resource has any references.
-         * @returns {boolean} Flag indicating if this object has any references.
-         */
-        this.hasReferences = function() {
-            return referenceCount > 0;
-        };
-
-        /**
-         * Construct a simplified form for JSON serialization.
-         * @returns {{id: number, value: Object, isReference: boolean}}
-         */
-        this.toJSON = function() {
-            return {id: id, value: value, isReference: isReference};
-        };
     }
+
+    /**
+     * Add a reference to this resource.
+     */
+    Resource.prototype.addReference = function() {
+        this._referenceCount++;
+    };
+
+    /**
+     * Remove a reference from this resource.
+     */
+    Resource.prototype.removeReference = function() {
+        if (this._referenceCount === 0) {
+            throw new Error("Reference count imbalance. Removing reference from object with no references.");
+        }
+        this._referenceCount--;
+    };
+
+    /**
+     * Check if this resource has any references.
+     * @returns {boolean} Flag indicating if this object has any references.
+     */
+    Resource.prototype.hasReferences = function() {
+        return this._referenceCount > 0;
+    };
+
+    /**
+     * Construct a simplified form for JSON serialization.
+     * @returns {{id: number, value: Object, isReference: boolean}}
+     */
+    Resource.prototype.toJSON = function() {
+        return {
+            id: this._id,
+            value: this._value,
+            isReference: this._isReference
+        };
+    };
 
     /**
      * Create a resource from a json serialized resource.

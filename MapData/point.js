@@ -3,7 +3,7 @@
  * Defines an object that represents a point.
  */
 
-define(['MapData/observable'], function (observable) {
+define(['MapData/observable'], function(observable) {
 
     /**
      * Object which represents an X, Y coordinate pair.
@@ -19,15 +19,18 @@ define(['MapData/observable'], function (observable) {
 
         this.createObservedProperty("x", x);
         this.createObservedProperty("y", y);
-
-        /**
-         * Create a JSON version of this object which does not include extra information.
-         */
-        this.toJSON = function () {
-            return {x: this.x, y: this.y};
-        };
     }
 
+    /**
+     * Create a JSON version of this object which does not include extra information.
+     */
+    Point.prototype.toJSON = function() {
+        return {
+            x: this.x,
+            y: this.y
+        };
+    };
+    
     /**
      * Create a point from a JSON point.
      * @param {object} jsonPoint The parsed JSON object to create a point for.
