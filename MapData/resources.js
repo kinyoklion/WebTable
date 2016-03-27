@@ -14,10 +14,11 @@ define(["MapData/resource", "MapData/observable"], function(resource, observable
     function Resources(opt_json) {
         this._nextId = (opt_json === undefined) ? 0 : opt_json.nextId;
         this._resourceList = {};
+        var resources = this;
 
         if (opt_json !== undefined) {
             Object.keys(opt_json.resourceList).forEach(function(key) {
-                this._resourceList[key] = resource.fromJSON(opt_json.resourceList[key])
+                resources._resourceList[key] = resource.fromJSON(opt_json.resourceList[key]);
             });
         }
 
@@ -33,7 +34,7 @@ define(["MapData/resource", "MapData/observable"], function(resource, observable
         var idToAssign = this._nextId;
         this._nextId++;
         return String(idToAssign);
-    }
+    };
 
     /**
      * Add a resource for usage in the map. If the resource exists, then the id for the existing resource will be
@@ -45,8 +46,10 @@ define(["MapData/resource", "MapData/observable"], function(resource, observable
     Resources.prototype.addResource = function(value, isReference) {
         var valueId = undefined;
 
+        var resources = this;
+        
         Object.keys(this._resourceList).forEach(function(key) {
-            if (this._resourceList[key].value === value && this._resourceList[key].isReference === isReference) {
+            if (resources._resourceList[key].value === value && resources._resourceList[key].isReference === isReference) {
                 valueId = key;
             }
         });
@@ -79,9 +82,10 @@ define(["MapData/resource", "MapData/observable"], function(resource, observable
      */
     Resources.prototype.removeUnusedResources = function() {
         var idsToRemove = [];
+        var resources = this;
 
         Object.keys(this._resourceList).forEach(function(key) {
-            if (!this._resourceList[key].hasReferences()) {
+            if (!resources._resourceList[key].hasReferences()) {
                 idsToRemove.push(key);
             }
         });
@@ -90,7 +94,7 @@ define(["MapData/resource", "MapData/observable"], function(resource, observable
 
         Object.keys(idsToRemove).forEach(function(key) {
             notify("resourceList", key, observable.ChangeType.REMOVED);
-            delete this._resourceList[idsToRemove[key]];
+            delete resources._resourceList[idsToRemove[key]];
         });
     };
 
@@ -115,5 +119,5 @@ define(["MapData/resource", "MapData/observable"], function(resource, observable
     return {
         Resources: Resources,
         fromJSON: fromJSON
-    }
+    };
 });

@@ -42,7 +42,7 @@ define(['MapData/observable', 'MapData/mapobject'], function(observable, mapobje
      */
     Layer.prototype.addObject = function(objectToAdd) {
         this._objects.push(objectToAdd);
-        this.addChildObservable("objects[" + String(this._objects.length - 1) + "]", objectToAdd);
+        this.addChildObservable("objects." + String(this._objects.length - 1) + ".", objectToAdd);
         this.notify("objects", objectToAdd, observable.ChangeType.ADDED);
     };
 

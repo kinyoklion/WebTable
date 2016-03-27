@@ -20,8 +20,6 @@ define(["MapData/layer", "MapData/observable"], function(layer, observable) {
         }
 
         observable.MakeObservable(this);
-
-
     }
 
     /**
