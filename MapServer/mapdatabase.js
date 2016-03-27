@@ -138,6 +138,6 @@ function MapDatabase(url) {
     this._drop = function(callback) {
         db.dropDatabase(callback);
     };
-};
+}
 
 module.exports = MapDatabase;

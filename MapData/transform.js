@@ -45,7 +45,7 @@ define(["MapData/observable"], function(observable) {
             xScale: this.xScale,
             yScale: this.yScale,
             zScale: this.zScale
-        }
+        };
     };
 
     /**

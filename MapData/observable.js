@@ -170,5 +170,5 @@ define(function() {
     return {
         MakeObservable: MakeObservable,
         ChangeType: ChangeType
-    }
+    };
 });

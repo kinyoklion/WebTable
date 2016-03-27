@@ -58,5 +58,5 @@ define(["MapData/observable", "MapData/point"], function(observable, point) {
         MapSettings: MapSettings,
         GridType: GridType,
         fromJSON: fromJSON
-    }
+    };
 });

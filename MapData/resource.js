@@ -40,7 +40,7 @@ define(function() {
                 return value;
             },
             set: function() {
-                throw new Error("value cannot be changed")
+                throw new Error("value cannot be changed");
             }
         });
 
@@ -106,5 +106,5 @@ define(function() {
     return {
         Resource: Resource,
         fromJSON: fromJSON
-    }
+    };
 });

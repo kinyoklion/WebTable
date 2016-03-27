@@ -48,5 +48,5 @@ define(['MapData/mapsettings', 'MapData/observable', 'MapData/layers', 'MapData/
         MapData: MapData,
         GridType: mapsettings.GridType,
         fromJSON: fromJSON
-    }
+    };
 });
