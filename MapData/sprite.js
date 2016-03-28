@@ -7,6 +7,8 @@ define(['MapData/observable', 'MapData/mapobject'], function(observable, mapobje
 
     /**
      * Object which represents a sprite.
+     * @param {object} [opt_json] Optional object containing a JSON serialized
+     * sprite.
      * @constructor
      */
     function Sprite(opt_json) {
@@ -34,8 +36,8 @@ define(['MapData/observable', 'MapData/mapobject'], function(observable, mapobje
     
     /**
      * Create a sprite from a JSON sprite.
-     * @param {object} jsonPoint The parsed JSON object to create a point for.
-     * @returns {Point} Point created from the JSON object.
+     * @param {object} jsonSprite The parsed JSON object to create a Sprite for.
+     * @returns {Sprite} Sprite created from the JSON object.
      */
     function fromJSON(jsonSprite) {
         return new Sprite(jsonSprite);
