@@ -4,7 +4,7 @@
  * managing objects.
  */
 
-define(['MapData/observable', 'MapData/mapobject'], function(observable, mapobject) {
+define(['MapData/observable', 'MapData/mapobjectserializer'], function(observable, mapobjectserializer) {
 
     /**
      * Construct a layer object. Layer objects are responsible for managing
@@ -23,7 +23,7 @@ define(['MapData/observable', 'MapData/mapobject'], function(observable, mapobje
 
         if (opt_json !== undefined) {
             for (var objectIndex = 0; objectIndex < opt_json.objects.length; objectIndex++) {
-                this._objects.push(new mapobject.fromJSON(opt_json.objects[objectIndex]));
+                this._objects.push(new mapobjectserializer.fromJSON(opt_json.objects[objectIndex]));
             }
         }
 

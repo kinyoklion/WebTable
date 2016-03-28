@@ -2,7 +2,7 @@
  * Created by Ryan Lamb on 11/14/15.
  */
 
-/* The following comment informs JSLint about the expect method of Jasmine. */ 
+/* The following comment informs JSLint about the expect method of Jasmine. */
 /*global expect*/
 
 describe("Layer", function() {
@@ -10,12 +10,16 @@ describe("Layer", function() {
     var Layer;
     var fromJSON;
     var ChangeType;
+    var MapObject;
+    var Sprite;
 
     beforeEach(function(done) {
-        require(['MapData/layer', 'MapData/observable'], function(layer, observable) {
+        require(['MapData/layer', 'MapData/observable', 'MapData/mapobject', 'MapData/sprite'], function(layer, observable, mapobject, sprite) {
             Layer = layer.Layer;
             fromJSON = layer.fromJSON;
             ChangeType = observable.ChangeType;
+            Sprite = sprite.Sprite;
+            MapObject = mapobject.MapObject;
             done();
         });
     });
@@ -75,7 +79,7 @@ describe("Layer", function() {
 
         expect(observeCalled).toBe(true);
     });
-    
+
     it("should provide notification of editorVisible value changes", function() {
         var layer = new Layer();
         var observeCalled = false;
@@ -107,7 +111,7 @@ describe("Layer", function() {
 
         expect(observeCalled).toBe(true);
     });
-    
+
     it("should provide notification of name value changes", function() {
         var layer = new Layer();
         var observeCalled = false;
@@ -119,7 +123,7 @@ describe("Layer", function() {
             expect(change).toBe(ChangeType.UPDATED);
         });
 
-        layer.name  = "ChangedName";
+        layer.name = "ChangedName";
 
         expect(observeCalled).toBe(true);
     });
@@ -139,20 +143,56 @@ describe("Layer", function() {
         expect(parsed.opacity).toBe(0.25);
     });
 
+    it("should allow addition of MapObjects", function() {
+        var object = new MapObject();
+        object.transform.x = 10;
+        var layer = new Layer();
+        layer.addObject(object);
+        expect(layer.getObjectCount()).toBe(1);
+        expect(layer.getObjectByIndex(0).transform.x).toBe(10);
+    });
+
+    it("should allow addition of Sprites", function() {
+        var object = new Sprite();
+        object.resourceId = 20;
+        object.transform.x = 10;
+        var layer = new Layer();
+        layer.addObject(object);
+        expect(layer.getObjectCount()).toBe(1);
+        expect(layer.getObjectByIndex(0).transform.x).toBe(10);
+        expect(layer.getObjectByIndex(0).resourceId).toBe(20);
+    });
+
     it("should be parsed from JSON", function() {
+        var sprite = new Sprite();
+        sprite.resourceId = 20;
+        sprite.transform.x = 10;
+
+        var object = new MapObject();
+        object.transform.x = 13;
+
         var layer = new Layer();
         layer.visible = false;
         layer.editorVisible = true;
         layer.viewerVisible = false;
         layer.opacity = 0.25;
 
+        layer.addObject(sprite);
+        layer.addObject(object);
+
         var jsonLayer = JSON.stringify(layer);
         var parsed = JSON.parse(jsonLayer);
         var newLayer = fromJSON(parsed);
-        
+
         expect(newLayer.visible).toBe(false);
         expect(newLayer.editorVisible).toBe(true);
         expect(newLayer.viewerVisible).toBe(false);
         expect(parsed.opacity).toBe(0.25);
+
+        expect(newLayer.getObjectCount()).toBe(2);
+        expect(newLayer.getObjectByIndex(0).transform.x).toBe(10);
+        expect(newLayer.getObjectByIndex(0).resourceId).toBe(20);
+
+        expect(newLayer.getObjectByIndex(1).transform.x).toBe(13);
     });
 });

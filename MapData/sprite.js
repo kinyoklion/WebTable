@@ -28,6 +28,7 @@ define(['MapData/observable', 'MapData/mapobject'], function(observable, mapobje
     Sprite.prototype.toJSON = function() {
         var json = mapobject.MapObject.prototype.toJSON.call(this);
         json.resourceId = this.resourceId;
+        json.objectType = "Sprite";
         return json;
     };
     

@@ -24,7 +24,8 @@ define(['MapData/observable', 'MapData/transform'], function(observable, transfo
      */
     MapObject.prototype.toJSON = function() {
         return {
-            transform: this.transform.toJSON()
+            transform: this.transform.toJSON(),
+            objectType: "MapObject"
         };
     };
 
