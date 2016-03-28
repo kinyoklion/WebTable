@@ -16,20 +16,59 @@ requirejs(['MapData/mapdata', 'MapData/observable'],
         var database = new mapdatabase('mongodb://localhost:27017/test');
         var persistenceEngine = require("./persistenceengine.js");
         var persistence = new persistenceEngine(database, mapdata, observable);
+        // var loadedMap = null;
 
-        persistence.loadMap("Name1", function(found, map) {
-            if (found === true && map !== undefined) {
-                console.log("Map Name: " + map.name);
-                if (map.name === "Name1") {
-                    map.name = "Name0";
+        // persistence.loadMap("TestMap", function(found, map) {
+        //     if (found === true && map !== undefined) {
+        //         console.log("Loaded Map: " + map.name);
+        //         loadedMap = map;
+        //     }
+        //     else if (found === false) {
+        //         console.log("Map Not Found");
+        //         persistence.createMap("TestMap", function() {});
+        //     }
+        // });
+
+        var http = require('http');
+        var dispatcher = require('httpdispatcher');
+
+        dispatcher.setStatic('resources');
+        dispatcher.beforeFilter(/\/getMap\/[0-9a-zA-Z]+/, function(req, res) {
+            var mapName = req.url.slice(8);
+            console.log("Map Name:" + mapName);
+
+            persistence.loadMap(mapName, function(found, map) {
+                if (found === true && map !== undefined) {
+                    console.log("Loaded Map: " + map.name);
+                    res.writeHead(200, {
+                        'Content-Type': 'text/plain'
+                    });
+                    res.end("{\"ok\":1,\"map\":" + JSON.stringify(map) + "}");
                 }
-                else {
-                    map.name = "Name1";
+                else if (found === false) {
+                    res.writeHead(200, {
+                        'Content-Type': 'text/plain'
+                    });
+                    res.end(JSON.stringify("{\"ok\":0}"));
                 }
+            });
+        });
+
+        const PORT = 8081;
+
+        function handleRequest(request, response) {
+            try {
+                console.log(request.url);
+                dispatcher.dispatch(request, response);
             }
-            else if (found === false) {
-                console.log("Map Not Found");
-                //persistence.createMap("Name0", function() {});
+            catch (error) {
+                console.log(error);
             }
+        }
+
+        var server = http.createServer(handleRequest);
+
+        server.listen(PORT, function() {
+            console.log("Server listening on: http://localhost:%s", PORT);
         });
     });
