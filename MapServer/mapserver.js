@@ -16,18 +16,6 @@ requirejs(['MapData/mapdata', 'MapData/observable'],
         var database = new mapdatabase('mongodb://localhost:27017/test');
         var persistenceEngine = require("./persistenceengine.js");
         var persistence = new persistenceEngine(database, mapdata, observable);
-        // var loadedMap = null;
-
-        // persistence.loadMap("TestMap", function(found, map) {
-        //     if (found === true && map !== undefined) {
-        //         console.log("Loaded Map: " + map.name);
-        //         loadedMap = map;
-        //     }
-        //     else if (found === false) {
-        //         console.log("Map Not Found");
-        //         persistence.createMap("TestMap", function() {});
-        //     }
-        // });
 
         var http = require('http');
         var dispatcher = require('httpdispatcher');
@@ -54,11 +42,25 @@ requirejs(['MapData/mapdata', 'MapData/observable'],
             });
         });
 
+        var modificationRegex = /\/(modify\/)([0-9a-zA-Z]+\/)(.*)/;
+        dispatcher.beforeFilter(modificationRegex, function(req, res) {
+            var match = modificationRegex.exec(req.url);
+            var mapName = match[2];
+            var modification = match[3];
+            console.log("Map Name: " + mapName);
+            console.log("Modification: " + modification);
+
+            res.writeHead(200, {
+                'Content-Type': 'text/plain'
+            });
+            res.end(JSON.stringify("{\"ok\":1}"));
+        });
+
         const PORT = 8081;
 
         function handleRequest(request, response) {
             try {
-                console.log(request.url);
+                console.log("Request Url: " + request.url);
                 dispatcher.dispatch(request, response);
             }
             catch (error) {
