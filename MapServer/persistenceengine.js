@@ -54,7 +54,8 @@ function PersistenceEngine(database, mapdata, observable) {
      * @param {function} callback A callback that will execute after all pending operations have completed.
      */
     this.then = function(callback) {
-        Promise.all(operations).then(function() {
+        Promise.all(operations).then(function(values) {
+            console.log(values);
             operations = [];
             callback();
         });

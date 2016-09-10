@@ -13,6 +13,11 @@ describe("PersistenceEngine", function() {
     var Layer;
     var count = 0;
 
+    function debugTest()
+    {
+        console.log(count);
+    }
+
     beforeEach(function(done) {
         var requirejs = require('requirejs');
 
@@ -44,11 +49,13 @@ describe("PersistenceEngine", function() {
     });
 
     it("should be created", function() {
+        debugTest();
         expect(persistence).not.toBe(null);
         expect(persistence).not.toBe(undefined);
     });
 
     it("should not have the test map", function(done) {
+        debugTest();
         persistence.loadMap("TestMap", function(mapLoaded, map) {
             expect(mapLoaded).toBe(false);
             expect(map).toBe(undefined);
@@ -57,6 +64,7 @@ describe("PersistenceEngine", function() {
     });
 
     it("should allow creation of a map", function(done) {
+        debugTest();
         persistence.createMap("TestMap", function(result) {
             expect(result.result.ok).toBe(1);
             done();
@@ -64,6 +72,7 @@ describe("PersistenceEngine", function() {
     });
 
     it("should persist changes to the map name", function(done) {
+        debugTest();
         persistence.createMap("TestMap", function(result) {
             persistence.loadMap("TestMap", function(mapFound, map) {
                 if (mapFound === true && map != undefined) {
@@ -120,6 +129,7 @@ describe("PersistenceEngine", function() {
     }
 
     it("should persist addition of layers", function(done) {
+        debugTest();
         makeAndModifyMap(function(map) {
             var testLayer = new Layer();
             testLayer.name = "TestLayer";
@@ -138,6 +148,7 @@ describe("PersistenceEngine", function() {
     });
 
     it("should persist layer name changes", function(done) {
+        debugTest();
         makeAndModifyMap(function(map) {
             var testLayer = new Layer();
             testLayer.name = "TestLayer";
@@ -154,6 +165,7 @@ describe("PersistenceEngine", function() {
     });
 
     it("should persist visible changes", function(done) {
+        debugTest();
         makeAndModifyMap(function(map) {
             var testLayer = new Layer();
             testLayer.name = "TestLayer";
@@ -171,6 +183,7 @@ describe("PersistenceEngine", function() {
     });
 
     it("should persist editor visible changes", function(done) {
+        debugTest();
         makeAndModifyMap(function(map) {
             var testLayer = new Layer();
             testLayer.name = "TestLayer";
@@ -188,6 +201,7 @@ describe("PersistenceEngine", function() {
     });
 
     it("should persist player visible changes", function(done) {
+        debugTest();
         makeAndModifyMap(function(map) {
             var testLayer = new Layer();
             testLayer.name = "TestLayer";
@@ -205,6 +219,7 @@ describe("PersistenceEngine", function() {
     });
 
     it("should persist opacity visible", function(done) {
+        debugTest();
         makeAndModifyMap(function(map) {
             var testLayer = new Layer();
             testLayer.name = "TestLayer";
