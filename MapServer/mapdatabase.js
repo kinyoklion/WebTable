@@ -95,7 +95,6 @@ function MapDatabase(url) {
             value = value.toJSON();
         }
         pushArgument[path] = value;
-        console.log("Push path: " + path);
         return db.collection('maps').update({
             name: mapName
         }, {
