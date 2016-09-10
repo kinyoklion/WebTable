@@ -21,6 +21,22 @@ requirejs(['MapData/mapdata', 'MapData/observable'],
         var dispatcher = require('httpdispatcher');
 
         dispatcher.setStatic('resources');
+
+        dispatcher.beforeFilter(/\/createMap\/[0-9a-zA-Z]+/, function(req, res) {
+            var mapName = req.url.slice(11);
+            persistence.createMap(mapName, function(result) {
+                if(result.insertedCount == 0) {
+                    res.end(JSON.stringify("{\"ok\":0}"));
+                }
+                else {
+                    res.writeHead(200, {
+                        'Content-Type': 'text/plain'
+                    });
+                    res.end(JSON.stringify("{\"ok\":1}"));
+                }
+            });
+        });
+
         dispatcher.beforeFilter(/\/getMap\/[0-9a-zA-Z]+/, function(req, res) {
             var mapName = req.url.slice(8);
             console.log("Map Name:" + mapName);

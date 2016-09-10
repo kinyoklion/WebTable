@@ -33,6 +33,12 @@ function PersistenceEngine(database, mapdata, observable) {
         });
     };
 
+    /**
+     * Create a new map with the given name.
+     * @param {string} mapName The name for the new map.
+     * @param {function} Callback executed after the map has been added. The result contains the number
+     * of records added. If this is 0, then no map was created.
+     */
     this.createMap = function(mapName, callback) {
         database.connect(function() {
             var map = new mapdata.MapData();
@@ -42,7 +48,11 @@ function PersistenceEngine(database, mapdata, observable) {
             });
         });
     };
-    
+
+    /**
+     * Execute any pending operations.
+     * @param {function} callback A callback that will execute after all pending operations have completed.
+     */
     this.then = function(callback) {
         Promise.all(operations).then(function() {
             operations = [];
@@ -50,6 +60,13 @@ function PersistenceEngine(database, mapdata, observable) {
         });
     };
 
+    /**
+     * Record an update to be persisted.
+     * @param {object} sender Object which is the origin of the change.
+     * @param {string} path A path that indicates the object within the map model.
+     * @param {object} value The value associated with the change.
+     * @param {ChangeType} change The type of the change.
+     */
     var updateMap = function(sender, path, value, change) {
         if (change === observable.ChangeType.UPDATED) {
             operations.push(database.updateField(persistedName, path, value));
