@@ -7,4 +7,4 @@ define(function (require) {
 
     var engine = new mapEngine.MapEngine();
     engine.start();
-});git r
+});
