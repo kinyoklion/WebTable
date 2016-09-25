@@ -10,8 +10,12 @@ requirejs.config({
     baseUrl: '../',
 });
 
-requirejs(['MapData/mapdata', 'MapData/observable'],
-    function(mapdata, observable) {
+requirejs(['MapData/mapdata',
+        'MapData/layer',
+        'MapData/observable'],
+    function(mapdata,layer, observable) {
+        const PORT = 8081;
+
         var mapdatabase = require("./mapdatabase.js");
         var database = new mapdatabase('mongodb://localhost:27017/test');
         var persistenceEngine = require("./persistenceengine.js");
@@ -21,6 +25,28 @@ requirejs(['MapData/mapdata', 'MapData/observable'],
         var dispatcher = require('httpdispatcher');
 
         dispatcher.setStatic('resources');
+
+        function loadMap(mapName, res, callback) {
+            persistence.loadMap(mapName, function(found, map) {
+                if (found === true && map !== undefined) {
+                    if(callback !== undefined) {
+                        callback(map);
+                    }
+
+                    console.log("Loaded Map: " + map.name);
+                    res.writeHead(200, {
+                        'Content-Type': 'text/plain'
+                    });
+                    res.end("{\"ok\":1,\"map\":" + JSON.stringify(map) + "}");
+                }
+                else if (found === false) {
+                    res.writeHead(200, {
+                        'Content-Type': 'text/plain'
+                    });
+                    res.end(JSON.stringify("{\"ok\":0}"));
+                }
+            });
+        }
 
         dispatcher.beforeFilter(/\/createMap\/[0-9a-zA-Z]+/, function(req, res) {
             var mapName = req.url.slice(11);
@@ -40,40 +66,37 @@ requirejs(['MapData/mapdata', 'MapData/observable'],
         dispatcher.beforeFilter(/\/getMap\/[0-9a-zA-Z]+/, function(req, res) {
             var mapName = req.url.slice(8);
             console.log("Map Name:" + mapName);
+            loadMap(mapName, res);
+        });
 
-            persistence.loadMap(mapName, function(found, map) {
-                if (found === true && map !== undefined) {
-                    console.log("Loaded Map: " + map.name);
-                    res.writeHead(200, {
-                        'Content-Type': 'text/plain'
-                    });
-                    res.end("{\"ok\":1,\"map\":" + JSON.stringify(map) + "}");
-                }
-                else if (found === false) {
-                    res.writeHead(200, {
-                        'Content-Type': 'text/plain'
-                    });
-                    res.end(JSON.stringify("{\"ok\":0}"));
-                }
+        var addLayerRegex = /\/addLayer\/([0-9a-zA-Z]+)\/([0-9a-zA-Z]+)/;
+        dispatcher.beforeFilter(addLayerRegex, function(req, res) {
+            var match = addLayerRegex.exec(req.url);
+            var mapName = match[1];
+            var layerName = match[2];
+            console.log("Map: " + mapName + " Layer: " + layerName);
+
+            loadMap(mapName, res, function(map) {
+                var newLayer = new layer.Layer();
+                newLayer.name = layerName;
+                map.layers.addLayer(newLayer);
+                persistence.then();
             });
         });
 
-        var modificationRegex = /\/(modify\/)([0-9a-zA-Z]+\/)(.*)/;
-        dispatcher.beforeFilter(modificationRegex, function(req, res) {
-            var match = modificationRegex.exec(req.url);
-            var mapName = match[2];
-            var modification = match[3];
-            console.log("Map Name: " + mapName);
-            console.log("Modification: " + modification);
+        var removeLayerRegex = /\/removeLayer\/([0-9a-zA-Z]+)\/([0-9a-zA-Z]+)/;
+        dispatcher.beforeFilter(removeLayerRegex, function(req, res) {
+            var match = removeLayerRegex.exec(req.url);
+            var mapName = match[1];
+            var layerName = match[2];
+            console.log("Map: " + mapName + " Layer: " + layerName);
 
-            res.writeHead(200, {
-                'Content-Type': 'text/plain'
+            loadMap(mapName, res, function(map) {
+                map.layers.removeLayerByName(layerName);
+                persistence.then();
             });
-            res.end(JSON.stringify("{\"ok\":1}"));
         });
-
-        const PORT = 8081;
-
+        
         function handleRequest(request, response) {
             try {
                 console.log("Request Url: " + request.url);
