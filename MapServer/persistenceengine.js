@@ -55,9 +55,15 @@ function PersistenceEngine(database, mapdata, observable) {
      * @param {function} callback A callback that will execute after all pending operations have completed.
      */
     this.then = function(callback) {
+
+        if(callback === undefined) {
+            callback = function() {};
+        }
+
         if(pendingOperations.length == 0)
         {
             callback();
+            return;
         }
 
         var operation = pendingOperations[0];
