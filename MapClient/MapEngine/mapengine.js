@@ -4,6 +4,7 @@
  */
 
 require.config({
+    waitSeconds: 90,
     paths: {
         "three": "lib/ThreeJS/three"
     },
