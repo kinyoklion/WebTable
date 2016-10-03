@@ -103,7 +103,7 @@ define(['MapClient/MapEngine/maprenderer',
                 var diffX = mouseDownPosition.x - event.clientX;
                 var diffY = mouseDownPosition.y - event.clientY;
 
-                camera.position.x = camera.position.x - diffX;
+                camera.position.x = camera.position.x + diffX;
                 camera.position.y = camera.position.y - diffY;
 
                 mouseDownPosition = {x:event.clientX, y:event.clientY};

@@ -128,6 +128,43 @@ requirejs(['MapData/mapdata',
             });
         });
 
+        // adjustGridOffset/map/xoffset/yoffset
+        var adjustGridOffset = /\/adjustGridOffset\/([0-9a-zA-Z]+)\/([0-9]+)\/([0-9]+)/;
+        dispatcher.beforeFilter(adjustGridOffset, function(req, res) {
+            var match = adjustGridOffset.exec(req.url);
+            var mapName = match[1];
+            var offsetX = match[2];
+            var offsetY = match[3];
+
+            loadMap(mapName, res, function(map) {
+                map.settings.gridOffset.x = offsetX;
+                map.settings.gridOffset.y = offsetY;
+                persistence.then();
+            });
+        });
+
+        var clientMap = "test";
+
+        // setClientMap/map/
+        var setClientMap = /\/setClientMap\/([0-9a-zA-Z]+)/;
+        dispatcher.beforeFilter(setClientMap, function(req, res) {
+            var match = setClientMap.exec(req.url);
+            clientMap = match[1];
+
+            res.writeHead(200, {
+                'Content-Type': 'text/plain'
+            });
+            res.end("{\"ok\":1,\"clientmap\":" + clientMap + "}");
+        });
+
+        var getClientMap = /\/getClientMap/;
+        dispatcher.beforeFilter(getClientMap, function(req, res) {
+            res.writeHead(200, {
+                'Content-Type': 'text/plain'
+            });
+            res.end("{\"ok\":1,\"clientmap\":\"" + clientMap + "\"}");
+        });
+
         function handleRequest(request, response) {
             try {
                 console.log("Request Url: " + request.url);
