@@ -89,6 +89,30 @@ define(['MapClient/MapEngine/maprenderer',
 
         };
 
+        var mouseDownPosition = undefined;
+        document.onmousedown = function() {
+            mouseDownPosition = {x:event.clientX, y:event.clientY};
+        };
+
+        document.onmouseup = function() {
+          mouseDownPosition = undefined;
+        };
+
+        document.onmousemove = function () {
+            if(mouseDownPosition !== undefined) {
+                var diffX = mouseDownPosition.x - event.clientX;
+                var diffY = mouseDownPosition.y - event.clientY;
+
+                camera.position.x = camera.position.x - diffX;
+                camera.position.y = camera.position.y - diffY;
+
+                mouseDownPosition = {x:event.clientX, y:event.clientY};
+            }
+        };
+
+
+
+
         requestAnimationFrame(renderCallback);
     };
 
