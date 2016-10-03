@@ -110,8 +110,33 @@ define(['MapClient/MapEngine/maprenderer',
             }
         };
 
+        var onDocumentTouchStart = function() {
+            if(event.touches.length === 1) {
+                mouseDownPosition = {x:event.touches[0].pageX, y:event.touches[0].pageY};
+            }
+        };
 
+        var onDocumentTouchEnd = function() {
+            mouseDownPosition = undefined;
+        };
 
+        var onDocumentTouchMove = function() {
+            if(event.touches.length === 1) {
+                if (mouseDownPosition !== undefined) {
+                    var diffX = mouseDownPosition.x - event.touches[0].pageX;
+                    var diffY = mouseDownPosition.y - event.touches[0].pageY;
+
+                    camera.position.x = camera.position.x - diffX;
+                    camera.position.y = camera.position.y - diffY;
+
+                    mouseDownPosition = {x:event.touches[0].pageX, y:event.touches[0].pageY};
+                }
+            }
+        };
+
+        document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+        document.addEventListener( 'touchend', onDocumentTouchEnd, false );
+        document.addEventListener( 'touchmove', onDocumentTouchMove, false );
 
         requestAnimationFrame(renderCallback);
     };
