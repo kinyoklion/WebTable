@@ -12,8 +12,9 @@ requirejs.config({
 
 requirejs(['MapData/mapdata',
         'MapData/layer',
-        'MapData/observable'],
-    function(mapdata,layer, observable) {
+        'MapData/observable',
+        'MapData/sprite'],
+    function(mapdata,layer, observable, sprite) {
         const PORT = 8081;
 
         var mapdatabase = require("./mapdatabase.js");
@@ -24,7 +25,8 @@ requirejs(['MapData/mapdata',
         var http = require('http');
         var dispatcher = require('httpdispatcher');
 
-        dispatcher.setStatic('resources');
+        dispatcher.setStatic('static');
+        dispatcher.setStaticDirname('../');
 
         function loadMap(mapName, res, callback) {
             persistence.loadMap(mapName, function(found, map) {
@@ -65,7 +67,6 @@ requirejs(['MapData/mapdata',
 
         dispatcher.beforeFilter(/\/getMap\/[0-9a-zA-Z]+/, function(req, res) {
             var mapName = req.url.slice(8);
-            console.log("Map Name:" + mapName);
             loadMap(mapName, res);
         });
 
@@ -74,7 +75,6 @@ requirejs(['MapData/mapdata',
             var match = addLayerRegex.exec(req.url);
             var mapName = match[1];
             var layerName = match[2];
-            console.log("Map: " + mapName + " Layer: " + layerName);
 
             loadMap(mapName, res, function(map) {
                 var newLayer = new layer.Layer();
@@ -89,14 +89,45 @@ requirejs(['MapData/mapdata',
             var match = removeLayerRegex.exec(req.url);
             var mapName = match[1];
             var layerName = match[2];
-            console.log("Map: " + mapName + " Layer: " + layerName);
 
             loadMap(mapName, res, function(map) {
                 map.layers.removeLayerByName(layerName);
                 persistence.then();
             });
         });
-        
+
+        // addItem/map/layer/name/resource
+        var addItemToLayer = /\/addItem\/([0-9a-zA-Z]+)\/([0-9a-zA-Z]+)\/([0-9a-zA-Z]+)\/([0-9a-zA-Z.]+)/;
+        dispatcher.beforeFilter(addItemToLayer, function(req, res) {
+            var match = addItemToLayer.exec(req.url);
+            var mapName = match[1];
+            var layerName = match[2];
+            //RRL: I didn't name items, but maybe I should have.
+            var itemName = match[3];
+            var resource = match[4];
+            loadMap(mapName, res, function(map) {
+                var layer = map.layers.getLayerByName(layerName);
+                var resourceId = map.resources.addResource(resource, true);
+                var item = new sprite.Sprite();
+                item.resourceId = resourceId;
+                layer.addObject(item);
+                persistence.then();
+            });
+        });
+
+        // changeGridSize/map/size
+        var changeGridSize = /\/changeGridSize\/([0-9a-zA-Z]+)\/([0-9]+)/;
+        dispatcher.beforeFilter(changeGridSize, function(req, res) {
+            var match = changeGridSize.exec(req.url);
+            var mapName = match[1];
+            var gridSize = match[2];
+
+            loadMap(mapName, res, function(map) {
+                map.settings.gridSize = gridSize;
+                persistence.then();
+            });
+        });
+
         function handleRequest(request, response) {
             try {
                 console.log("Request Url: " + request.url);

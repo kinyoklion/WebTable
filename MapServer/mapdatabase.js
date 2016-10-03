@@ -67,7 +67,8 @@ function MapDatabase(url) {
         return db.collection('maps').update({
             "name": mapName
         }, {
-            $set: update
+            $set: update,
+            $inc: {"version":1}
         }, writeOptions);
     };
 
@@ -84,7 +85,8 @@ function MapDatabase(url) {
             db.collection('maps').update({
                 name: mapName
             }, {
-                $pull: removeArgument
+                $pull: removeArgument,
+                $inc: {"version":1}
             }, writeOptions);
         });
     };
@@ -98,7 +100,9 @@ function MapDatabase(url) {
         return db.collection('maps').update({
             name: mapName
         }, {
-            $push: pushArgument
+            $push: pushArgument,
+            $inc: {"version":1}
+
         }, writeOptions);
     };
 

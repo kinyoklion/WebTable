@@ -17,8 +17,8 @@ define(["MapData/resource", "MapData/observable"], function(resource, observable
         var resources = this;
 
         if (opt_json !== undefined) {
-            Object.keys(opt_json.resourceList).forEach(function(key) {
-                resources._resourceList[key] = resource.fromJSON(opt_json.resourceList[key]);
+            opt_json.resourceList.forEach(function(item) {
+                resources._resourceList[item.id] = resource.fromJSON(item);
             });
         }
 
@@ -102,9 +102,14 @@ define(["MapData/resource", "MapData/observable"], function(resource, observable
      * Create a simplified JSON compatible version of this object.
      */
     Resources.prototype.toJSON = function() {
+        var resourcesList = [];
+        var resources = this;
+        Object.keys(resources._resourceList).forEach(function(key) {
+            resourcesList.push(resources._resourceList[key]);
+        });
         return {
             nextId: this._nextId,
-            resourceList: this._resourceList
+            resourceList: resourcesList
         };
     };
 

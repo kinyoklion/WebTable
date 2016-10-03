@@ -13,13 +13,15 @@ define(["MapData/layer", "MapData/observable"], function(layer, observable) {
     function Layers(opt_json) {
         //Ordered list of the layers.
         this._layers = [];
+        observable.MakeObservable(this);
+
         if (opt_json !== undefined) {
             for (var layerIndex = 0; layerIndex < opt_json.layers.length; layerIndex++) {
-                this._layers.push(new layer.fromJSON(opt_json.layers[layerIndex]));
+                var layerToAdd = new layer.fromJSON(opt_json.layers[layerIndex]);
+                this._layers.push(layerToAdd);
+                this.addChildObservable("layers." + String(layerIndex), layerToAdd);
             }
         }
-
-        observable.MakeObservable(this);
     }
 
     /**
@@ -78,6 +80,10 @@ define(["MapData/layer", "MapData/observable"], function(layer, observable) {
      */
     Layers.prototype.getLayerByIndex = function(layerIndex) {
         return this._layers[layerIndex];
+    };
+
+    Layers.prototype.getLayerCount = function() {
+        return this._layers.length;
     };
 
     /**

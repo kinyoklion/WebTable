@@ -15,6 +15,7 @@ define(['MapData/mapsettings', 'MapData/observable', 'MapData/layers', 'MapData/
         this._layers = (opt_json === undefined) ? new layersModule.Layers() : layersModule.fromJSON(opt_json.layers);
         this._resources = (opt_json === undefined) ? new resourcesModule.Resources() : resourcesModule.fromJSON(opt_json.resources);
         this._name = (opt_json === undefined) ? "Untitled" : opt_json.name;
+        this.version = (opt_json === undefined) ? 0 : opt_json.version;
 
         observable.MakeObservable(this);
         this.createObservableChildProperty("settings", this._settings, "settings", false);
@@ -32,7 +33,8 @@ define(['MapData/mapsettings', 'MapData/observable', 'MapData/layers', 'MapData/
             settings: this._settings.toJSON(),
             layers: this._layers.toJSON(),
             resources: this._resources.toJSON(),
-            name: this.name
+            name: this.name,
+            version: this.version
         };
     };
 

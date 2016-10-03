@@ -15,25 +15,54 @@ require.config({
 define(['MapClient/MapEngine/maprenderer',
     'MapClient/MapEngine/camera',
     'MapClient/MapEngine/texturedplane',
-    'MapClient/MapEngine/scene'], function(renderer, camera, texturedplane, scene){
+    'MapClient/MapEngine/scene',
+    'MapClient/MapEngine/grid'], function(renderer, camera, texturedplane, scene, grid){
     function MapEngine() {
         this.scene = new scene.Scene();
         this.camera = new camera.Camera(camera.CameraType.Orthographic);
         //Start the camera back some from 0.
         this.camera.position.z = 50;
         this.renderer = new renderer.MapRenderer(this.camera);
-        this.testPlane = new texturedplane.TexturedPlane("TestTexture.png", 0.1);
     }
+
+    MapEngine.prototype.updateFromMap = function(map) {
+        var scene = this.scene;
+        scene.clear();
+
+        var gridSize = map.settings.gridSize;
+        var gridOffset = map.settings.gridOffset;
+
+        var gridScale = 1000;
+        var mapGrid = new grid.Grid(gridScale, gridScale / gridSize);
+        mapGrid.rotation.x = Math.PI/2;
+        mapGrid.position.z = 10;
+        mapGrid.position.y = gridOffset.y;
+        mapGrid.position.x = gridOffset.x;
+        scene.add(mapGrid);
+
+        var layerCount = map.layers.getLayerCount();
+        for(var layerIndex = 0; layerIndex < layerCount; layerIndex++) {
+            var layer = map.layers.getLayerByIndex(layerIndex);
+            var objectCount = layer.getObjectCount();
+
+            for(var objectIndex = 0; objectIndex < objectCount; objectIndex++) {
+                var object = layer.getObjectByIndex(objectIndex);
+                var resource = map.resources.getResource(object.resourceId);
+                var resourcePath = "../../Resources/" + resource.value;
+
+                var sceneObject = new texturedplane.TexturedPlane(resourcePath, 0.1);
+                sceneObject.load(function(sceneObject) {
+                    scene.add(sceneObject);
+                });
+            }
+        }
+    };
 
     MapEngine.prototype.start = function()
     {
         var renderer = this.renderer;
         var scene = this.scene;
         var camera = this.camera;
-
-        this.testPlane.load(function(texturedPlane) {
-            scene.add(texturedPlane);
-        });
 
         //This is the main loop.
         var renderCallback = function() {
