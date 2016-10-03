@@ -26,7 +26,9 @@ define(function (require) {
             }
 
         };
-        xhr.open('GET', "http://localhost:8081/getMap/test", true);
+
+        var requestUrl = "http://" + window.location.host + "/getMap/test";
+        xhr.open('GET', requestUrl, true);
         xhr.send();
     }, 1000);
 });
